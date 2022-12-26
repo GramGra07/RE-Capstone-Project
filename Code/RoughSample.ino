@@ -5,13 +5,11 @@ char message[]="hello worldyybyy opp";
 int y = 0;
 int x = sizeof(message);
 String m ="";
-
 void setup() {
   Serial.begin(9600);
   lcd.begin(16, 2);
   print();
 }
-
 void loop() {
   lcd.cursor();
   lcd.setCursor(x, y);
