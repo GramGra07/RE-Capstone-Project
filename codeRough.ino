@@ -5,6 +5,7 @@ LiquidCrystal lcd(rs, en, d4,d5, d6, d7);
 String message="Plz tap center button";
 int y = 0;
 int x = message.length()-1;
+int t = 0;
 String m ="";
 String actions="";
 //button
@@ -13,9 +14,8 @@ int aBS = 0, fBS =0, bBS=0, rBS = 0, lBS =0;//button states
 //motor, only room for 3, middle wheel needs to be omni
 const int motorBR = 2, motorBL= 1, motorTurn = 0;
 //other
-//modes: selecting direction, selecting length, accept?
-boolean isStarted=true;
-boolean directionS = true;
+boolean isStarted=false;
+boolean directionS = false;
 boolean lengthS = false;
 boolean accepted = false;
 boolean runOVR = false;
@@ -34,15 +34,14 @@ void setup() {
 void loop() {
   setupButton();
   lcd.cursor();
-  if (aBS==HIGH){
-    if (not isStarted){
+  if (not isStarted){
+    if (aBS==HIGH){
       isStarted=true;
       directionS=true;
     }
-    checkAccepted();
   }
-  if (isStarted){
-    lcd.setCursor(x, y);
+  while (isStarted){
+    Serial.println(aBS);
     if (directionS){
       lengthS=false;
       if (not hasRun){
@@ -50,22 +49,20 @@ void loop() {
         message="Select direction:";
         print(15);
         handleButton();
-        hasRun=true;
       }
     }
-    
     if (lengthS){
       directionS=false;
       if (not hasRun){
         resetLCD();
-        message="Select time:";
+        message="Select time: ";
         print(15);
         handleButton();
-        hasRun=true;
       }
     }
+    delay(1000);
   }
-  Serial.println(actions);
+  //Serial.println(actions);
 }
 void resetLCD(){
   x=0;
@@ -82,37 +79,46 @@ void setupButton(){
   lBS = digitalRead(lBpin);
 }
 void checkAccepted(){
-  while (not aBS==HIGH and not accepted and Serial.available()==0){
-    if (aBS == HIGH){
-      accepted=true;
+  if (not accepted){
+    while (not aBS==true){
+      setupButton();
+      if (aBS==true){
+        if(lengthS){
+          directionS=true;
+          hasRun=false;
+          accepted=false;
+          lengthS=false;
+          //Serial.println("h");
+        }
+        if (directionS){
+          lengthS=true;
+          hasRun=false;
+          directionS=false;
+          accepted=false;
+        }
+        break;
+      }
     }
   }
 }
 void handleButton(){
-  //add button like inputs for testing
-  while (Serial.available()==0){
-  }
-  if (Serial.readString() == "f"){
-    fBS=HIGH;
-  }if (Serial.readString() == "b"){
-    bBS=HIGH;
-  }if (Serial.readString() == "l"){
-    lBS=HIGH;
-  }if (Serial.readString() == 'r'){
-    rBS=HIGH;
-  }
-  //that doesnt work ^
-  //end button inputs
+  fBS=HIGH;
   if (fBS==HIGH){
     //fwd
     if (directionS){
       actions+="F,";
-      accepted=false;
-      directionS=false;
-      lengthS=true;
-      resetLCD();
+      message+="F";
+      lcd.clear();
+      print(16);
+      checkAccepted();
     }
-    
+    if (lengthS){
+      t+=1;
+      message+=t;
+      lcd.clear();
+      lcd.print(message);
+      checkAccepted();
+    }
   }
   if (bBS==HIGH){
     //bwd
