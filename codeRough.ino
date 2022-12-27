@@ -41,7 +41,6 @@ void loop() {
     }
   }
   while (isStarted){
-    Serial.println(aBS);
     if (directionS){
       lengthS=false;
       if (not hasRun){
@@ -78,30 +77,10 @@ void setupButton(){
   rBS = digitalRead(rBpin);
   lBS = digitalRead(lBpin);
 }
-void checkAccepted(){
-  if (not accepted){
-    while (not aBS==true){
-      setupButton();
-      if (aBS==true){
-        if(lengthS){
-          directionS=true;
-          hasRun=false;
-          accepted=false;
-          lengthS=false;
-          //Serial.println("h");
-        }
-        if (directionS){
-          lengthS=true;
-          hasRun=false;
-          directionS=false;
-          accepted=false;
-        }
-        break;
-      }
-    }
-  }
-}
 void handleButton(){
+  //
+  //!none of this will work, need to get into mode then change stuff with new buttons
+  //
   fBS=HIGH;
   if (fBS==HIGH){
     //fwd
@@ -109,15 +88,27 @@ void handleButton(){
       actions+="F,";
       message+="F";
       lcd.clear();
-      print(16);
-      checkAccepted();
+      print(15);
+      setupButton();
+      if (aBS==HIGH){
+        Serial.println("H");
+        lengthS=true;
+        hasRun=false;
+        directionS=false;
+      }
     }
     if (lengthS){
+      setupButton();
       t+=1;
       message+=t;
       lcd.clear();
       lcd.print(message);
-      checkAccepted();
+      delay(500);
+      if (aBS==HIGH){
+        directionS=true;
+        hasRun=false;
+        lengthS=false;
+      }
     }
   }
   if (bBS==HIGH){
