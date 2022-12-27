@@ -37,6 +37,7 @@ void loop() {
   if (aBS==HIGH){
     if (not isStarted){
       isStarted=true;
+      directionS=true;
     }
     checkAccepted();
   }
@@ -47,6 +48,17 @@ void loop() {
       if (not hasRun){
         resetLCD();
         message="Select direction:";
+        print(15);
+        handleButton();
+        hasRun=true;
+      }
+    }
+    
+    if (lengthS){
+      directionS=false;
+      if (not hasRun){
+        resetLCD();
+        message="Select time:";
         print(15);
         handleButton();
         hasRun=true;
@@ -70,53 +82,67 @@ void setupButton(){
   lBS = digitalRead(lBpin);
 }
 void checkAccepted(){
-  //add button like inputs for testing
-  while (Serial.available()==0){
-  }
-  if (Serial.readString() == true){
-    aBS=HIGH;
-  }
-  //end button inputs
-  if (aBS==HIGH and not accepted){
-    accepted=true;
+  while (not aBS==HIGH and not accepted and Serial.available()==0){
+    if (aBS == HIGH){
+      accepted=true;
+    }
   }
 }
 void handleButton(){
   //add button like inputs for testing
   while (Serial.available()==0){
   }
-  if (Serial.readString() == true){
+  if (Serial.readString() == "f"){
     fBS=HIGH;
+  }if (Serial.readString() == "b"){
+    bBS=HIGH;
+  }if (Serial.readString() == "l"){
+    lBS=HIGH;
+  }if (Serial.readString() == 'r'){
+    rBS=HIGH;
   }
+  //that doesnt work ^
   //end button inputs
   if (fBS==HIGH){
     //fwd
     if (directionS){
       actions+="F,";
       accepted=false;
-      if(not accepted){
-        resetLCD();
-        message="Press center to accept: F";
-        aBS=HIGH;
-        print(16);
-        checkAccepted();
-      }
+      directionS=false;
+      lengthS=true;
+      resetLCD();
     }
+    
   }
   if (bBS==HIGH){
     //bwd
-    actions+="B,";
-    message+="B";
+    if (directionS){
+      actions+="B,";
+      accepted=false;
+      directionS=false;
+      lengthS=true;
+      resetLCD();
+    }
   }
   if (rBS==HIGH){
     //right
-    actions+="R,";
-    message+="R";
+    if (directionS){
+      actions+="R,";
+      accepted=false;
+      directionS=false;
+      lengthS=true;
+      resetLCD();
+    }
   }
   if (lBS==HIGH){
-    //leftd
-    actions+="L,";
-    message+="L";
+    //left
+    if (directionS){
+      actions+="L,";
+      accepted=false;
+      directionS=false;
+      lengthS=true;
+      resetLCD();
+    }
   }
 }
 void print(int start){//start will usually be 16 but changed to make not cut off words
