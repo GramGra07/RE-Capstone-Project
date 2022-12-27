@@ -1,4 +1,3 @@
-
 //lcd
 #include <LiquidCrystal.h>
 const int rs = 13, en = 12, d4 = 11, d5 = 10, d6 = 9, d7 = 8;
@@ -12,7 +11,7 @@ String actions="";
 const int acceptBPin = 7, fBpin = 6, bBpin = 5, rBpin = 4, lBpin = 3;// using 10-6 as inputs
 int aBS = 0, fBS =0, bBS=0, rBS = 0, lBS =0;//button states
 //motor, only room for 3, middle wheel needs to be omni
-const int motorBR = 3, motorBL= 2, motorTurn = 1;
+const int motorBR = 2, motorBL= 1, motorTurn = 0;
 //other
 //modes: selecting direction, selecting length, accept?
 boolean isStarted=true;
@@ -39,13 +38,12 @@ void loop() {
     if (not isStarted){
       isStarted=true;
     }
-    if (not accepted){
-      accepted=true;
-    }
+    checkAccepted();
   }
   if (isStarted){
     lcd.setCursor(x, y);
     if (directionS){
+      lengthS=false;
       if (not hasRun){
         resetLCD();
         message="Select direction:";
@@ -72,22 +70,37 @@ void setupButton(){
   lBS = digitalRead(lBpin);
 }
 void checkAccepted(){
+  //add button like inputs for testing
+  while (Serial.available()==0){
+  }
+  if (Serial.readString() == true){
+    aBS=HIGH;
+  }
+  //end button inputs
   if (aBS==HIGH and not accepted){
     accepted=true;
   }
 }
 void handleButton(){
-  fBS=HIGH;
+  //add button like inputs for testing
+  while (Serial.available()==0){
+  }
+  if (Serial.readString() == true){
+    fBS=HIGH;
+  }
+  //end button inputs
   if (fBS==HIGH){
     //fwd
-    actions+="F,";
-    accepted=false;
-    if(not accepted){
-      resetLCD();
-      message="Press center to accept: F";
-      aBS=HIGH;
-      print(16);
-      checkAccepted();
+    if (directionS){
+      actions+="F,";
+      accepted=false;
+      if(not accepted){
+        resetLCD();
+        message="Press center to accept: F";
+        aBS=HIGH;
+        print(16);
+        checkAccepted();
+      }
     }
   }
   if (bBS==HIGH){
