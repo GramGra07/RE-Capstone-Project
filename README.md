@@ -7,7 +7,7 @@ Links :
  - https://docs.arduino.cc/learn/electronics/lcd-displays
 
 ## Project Description
-We would like to build a robot that would be able to be programmed by a person as to how many inches to go in each direction. The person would press buttons to select steps, after this you would hit a button to execute the steps. It would take input from a distance sensor to make sure it wouldn't crash into something. We would show output back to the user with some sort of display, maybe a LCD or another display. We could show the user the steps they have just programmed.
+We would like to build a robot that would be able to be programmed by a person as to how many seconds to go in each direction. The person would press buttons to select steps, after this you would hit a button to execute the steps. It would take input from a distance sensor to make sure it wouldn't crash into something. We would show output back to the user with some sort of display, maybe a LCD or another display. We could show the user the steps they have just programmed.
 
 ## Basis for this project
 We wanted to do this project based on the idea of programming a user input, and translating it into robot movements.
