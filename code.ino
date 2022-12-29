@@ -7,20 +7,30 @@ int y = 0;
 int x = message.length() - 1;
 int t = 0;
 String m = "";
-String actions = "";
+String actions = " ";
 //button
 const int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;// using 7-4 as inputs
 int aBS = 0, fBS = 0, bBS = 0, rBS = 0, lBS = 0; //button states
 const int motorBR = 3, motorBL = 2, motorFR = 1, motorFL = 0;
+//distance
+const int dPinEcho = 14, dPinTrig = 15;
+long duration;
+int distance;
+int limit = 4;
+//runtime
+double startTime=millis();
+double currentTime;
+double runtime;
 //other
 boolean isStarted = false;
 boolean directionS = false;
 boolean lengthS = false;
-boolean accepted = false;
 boolean runOVR = false;
 boolean hasRun = false;
 //Serial.println(message.length());
-void setup() {
+void setup() {  
+  pinMode(dPinTrig, OUTPUT); 
+  pinMode(dPinEcho, INPUT); 
   pinMode(acceptBPin, INPUT);
   pinMode(fBpin, INPUT);
   pinMode(rBpin, INPUT);
@@ -38,8 +48,17 @@ void loop() {
       directionS = true;
     }
   }
-  while (isStarted) {
+  while (isStarted and not runOVR) {
     doSelections(directionS, lengthS);
+    if (runOVR){
+      break;
+    }
+  }
+  while (isStarted and runOVR){
+    indexIntoActions();
+    if (!isStarted){
+      break;
+    }
   }
   //Serial.println(actions);
 }
@@ -93,8 +112,8 @@ void doSelections(boolean d, boolean t) {
     int l = digitalRead(lBpin);
     while (!isAccepted and not hasRun) {
       if (f == HIGH) {
-        actions += "F";
-        message[17] = "F";
+        actions[-1] = "F ";
+        message[-1] = "F";
         lcd.clear();
         print(15);
         if (isAccepted) {
@@ -104,8 +123,8 @@ void doSelections(boolean d, boolean t) {
         }
       }
       if (r == HIGH) {
-        actions += "R";
-        message += " R";
+        actions[-1]= "R ";
+        message[-1]= "R";
         lcd.clear();
         print(15);
         if (isAccepted) {
@@ -115,8 +134,8 @@ void doSelections(boolean d, boolean t) {
         }
       }
       if (l == HIGH) {
-        actions += "L";
-        message += " L";
+        actions[-1]= "L ";
+        message[-1]= "L";
         lcd.clear();
         print(15);
         if (isAccepted) {
@@ -134,23 +153,34 @@ void doSelections(boolean d, boolean t) {
     int r = digitalRead(rBpin);
     int l = digitalRead(lBpin);
     resetLCD();
-    message = "Select time (r = +, l = -): ";
+    message = "Select time (r = +, l = -):  ";
     print(15);
     while (!isAccepted) {
+      Serial.println(t);
       if (r) {
-        t += 1;
+        if (t<9){
+          t += 1;
+        }
       }
       if (l) {
-        if (t > 1) {
+        if (t >= 1) {
           t -= 1;
         }
       }
-      message += t;
+      message[-1]= t;
+      actions[-1]=t;
       lcd.print(message);
       if (isAccepted) {
         switchToD();
         break;
       }
+    }
+  }
+}
+void indexIntoActions(){
+  for (int i = 0; i<actions.length(); i+=2){
+    if (not isDigit(actions[i]) and isDigit(actions[i+1])){
+      runMotors(String(actions[i]),actions[i+1]);
     }
   }
 }
@@ -173,24 +203,49 @@ void makeMessage(int s, int e) {
     m += message[i];
   }
 }
-void runMotors(int d, int t) { //distance and time
-  //   1
-  //2    3
-  if (d == 1) {
+int runDistance(){
+  digitalWrite(dPinTrig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(dPinTrig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(dPinTrig, LOW);
+  duration = pulseIn(dPinEcho, HIGH);
+  distance = duration * 0.034 / 2; 
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  return distance;
+}
+void runMotors(String d, int t) { //distance and time
+  if (d =="F") {
     //go forward
     delay(t * 1000);
     //stop
   }
-  if (d == 2) {
+  if (d == "R") {
     //turn -90
     //go forward
     delay(t * 1000);
     //stop
   }
-  if (d == 3) {
+  if (d =="L") {
     //turn 90
     //go forward
     delay(t * 1000);
     //stop
+  }
+}
+void getRuntime(){
+  currentTime = 0;
+  currentTime = millis();
+  runtime = currentTime-startTime;
+}
+void runForward(int t){
+  while (runtime*1000>t){
+    //setMotorPower
+    if (runDistance<limit){
+      isStarted = false;
+      break;
+    }
   }
 }
