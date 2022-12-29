@@ -219,19 +219,19 @@ int runDistance(){
 void runMotors(String d, int t) { //distance and time
   if (d =="F") {
     //go forward
-    delay(t * 1000);
+    runForward(t);
     //stop
   }
   if (d == "R") {
     //turn -90
     //go forward
-    delay(t * 1000);
+    runForward(t);
     //stop
   }
   if (d =="L") {
     //turn 90
     //go forward
-    delay(t * 1000);
+    runForward(t);
     //stop
   }
 }
