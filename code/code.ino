@@ -9,8 +9,8 @@ int t = 0;
 String m = "";
 String actions = " ";
 //button
-const int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;// using 7-4 as inputs
-int aBS = 0, fBS = 0, bBS = 0, rBS = 0, lBS = 0; //button states
+const int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;  // using 7-4 as inputs
+int aBS = 0, fBS = 0, bBS = 0, rBS = 0, lBS = 0;            //button states
 const int motorBR = 3, motorBL = 2, motorFR = 1, motorFL = 0;
 //distance
 const int dPinEcho = 14, dPinTrig = 15;
@@ -18,7 +18,7 @@ long duration;
 int distance;
 int limit = 4;
 //runtime
-double startTime=millis();
+double startTime = millis();
 double currentTime;
 double runtime;
 //other
@@ -28,16 +28,16 @@ boolean lengthS = false;
 boolean runOVR = false;
 boolean hasRun = false;
 //Serial.println(message.length());
-void setup() {  
-  pinMode(dPinTrig, OUTPUT); 
-  pinMode(dPinEcho, INPUT); 
+void setup() {
+  pinMode(dPinTrig, OUTPUT);
+  pinMode(dPinEcho, INPUT);
   pinMode(acceptBPin, INPUT);
   pinMode(fBpin, INPUT);
   pinMode(rBpin, INPUT);
   pinMode(lBpin, INPUT);
   Serial.begin(9600);
   lcd.begin(16, 2);
-  print(15);//starting message
+  print(15);  //starting message
 }
 void loop() {
   reBind();
@@ -50,13 +50,13 @@ void loop() {
   }
   while (isStarted and not runOVR) {
     doSelections(directionS, lengthS);
-    if (runOVR){
+    if (runOVR) {
       break;
     }
   }
-  while (isStarted and runOVR){
+  while (isStarted and runOVR) {
     indexIntoActions();
-    if (!isStarted){
+    if (!isStarted) {
       break;
     }
   }
@@ -98,7 +98,7 @@ void doSelections(boolean d, boolean t) {
   hasRun = false;
   if (d) {
     resetLCD();
-    message = "Select direction:  "; //last = [18]
+    message = "Select direction:  ";  //last = [18]
     print(15);
     reBind();
     while (!isAccepted and not hasRun) {
@@ -114,8 +114,8 @@ void doSelections(boolean d, boolean t) {
         }
       }
       if (rBS == HIGH) {
-        actions[-1]= "R ";
-        message[-1]= "R";
+        actions[-1] = "R ";
+        message[-1] = "R";
         lcd.clear();
         print(15);
         if (isAccepted) {
@@ -125,8 +125,8 @@ void doSelections(boolean d, boolean t) {
         }
       }
       if (lBS == HIGH) {
-        actions[-1]= "L ";
-        message[-1]= "L";
+        actions[-1] = "L ";
+        message[-1] = "L";
         lcd.clear();
         print(15);
         if (isAccepted) {
@@ -146,7 +146,7 @@ void doSelections(boolean d, boolean t) {
     while (!isAccepted) {
       Serial.println(t);
       if (rBS) {
-        if (t<9){
+        if (t < 9) {
           t += 1;
         }
       }
@@ -155,8 +155,8 @@ void doSelections(boolean d, boolean t) {
           t -= 1;
         }
       }
-      message[-1]= t;
-      actions[-1]=t;
+      message[-1] = t;
+      actions[-1] = t;
       lcd.print(message);
       if (isAccepted) {
         switchToD();
@@ -165,14 +165,14 @@ void doSelections(boolean d, boolean t) {
     }
   }
 }
-void indexIntoActions(){
-  for (int i = 0; i<actions.length(); i+=2){
-    if (not isDigit(actions[i]) and isDigit(actions[i+1])){
-      runMotors(String(actions[i]),actions[i+1]);
+void indexIntoActions() {
+  for (int i = 0; i < actions.length(); i += 2) {
+    if (not isDigit(actions[i]) and isDigit(actions[i + 1])) {
+      runMotors(String(actions[i]), actions[i + 1]);
     }
   }
 }
-void print(int start) { //start will usually be 16 but changed to make not cut off words
+void print(int start) {  //start will usually be 16 but changed to make not cut off words
   if (message.length() >= 16) {
     makeMessage(0, start);
     lcd.print(m);
@@ -191,21 +191,21 @@ void makeMessage(int s, int e) {
     m += message[i];
   }
 }
-int runDistance(){
+int runDistance() {
   digitalWrite(dPinTrig, LOW);
   delayMicroseconds(2);
   digitalWrite(dPinTrig, HIGH);
   delayMicroseconds(10);
   digitalWrite(dPinTrig, LOW);
   duration = pulseIn(dPinEcho, HIGH);
-  distance = duration * 0.034 / 2; 
+  distance = duration * 0.034 / 2;
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
   return distance;
 }
-void runMotors(String d, int t) { //distance and time
-  if (d =="F") {
+void runMotors(String d, int t) {  //distance and time
+  if (d == "F") {
     //go forward
     runForward(t);
     //stop
@@ -216,22 +216,22 @@ void runMotors(String d, int t) { //distance and time
     runForward(t);
     //stop
   }
-  if (d =="L") {
+  if (d == "L") {
     //turn 90
     //go forward
     runForward(t);
     //stop
   }
 }
-void getRuntime(){
+void getRuntime() {
   currentTime = 0;
   currentTime = millis();
-  runtime = currentTime-startTime;
+  runtime = currentTime - startTime;
 }
-void runForward(int t){
-  while (runtime*1000>t){
+void runForward(int t) {
+  while (runtime * 1000 > t) {
     //setMotorPower
-    if (runDistance<limit){
+    if (runDistance < limit) {
       isStarted = false;
       break;
     }
