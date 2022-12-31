@@ -3,11 +3,8 @@
 const int rs = 13, en = 12, d4 = 11, d5 = 10, d6 = 9, d7 = 8;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 String message = "Plz tap center button";
-int y = 0;
-int x = message.length() - 1;
-int t = 0;
-String m = "";
-String actions = " ";
+int x = message.length() - 1, y = 0, t = 0;
+String m = "", actions = " ";
 //button
 const int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;  // using 7-4 as inputs
 int aBS = 0, fBS = 0, bBS = 0, rBS = 0, lBS = 0;            //button states
@@ -15,18 +12,11 @@ const int motorBR = 3, motorBL = 2, motorFR = 1, motorFL = 0;
 //distance
 const int dPinEcho = 14, dPinTrig = 15;
 long duration;
-int distance;
-int limit = 4;
+int distance, limit = 4;
 //runtime
-double startTime = millis();
-double currentTime;
-double runtime;
+double startTime = millis(), currentTime, runtime;
 //other
-boolean isStarted = false;
-boolean directionS = false;
-boolean lengthS = false;
-boolean runOVR = false;
-boolean hasRun = false;
+boolean isStarted = false, directionS = false, lengthS = false, runOVR = false, hasRun = false;
 //Serial.println(message.length());
 void setup() {
   pinMode(dPinTrig, OUTPUT);
