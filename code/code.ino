@@ -40,7 +40,7 @@ void setup() {
   print(15);//starting message
 }
 void loop() {
-  setupButton();
+  reBind();
   lcd.cursor();
   if (not isStarted) {
     if (aBS == HIGH) {
@@ -69,18 +69,18 @@ void resetLCD() {
   lcd.clear();
   message = "";
 }
-void setupButton() {
+void reBind() {
   aBS = digitalRead(acceptBPin);
   fBS = digitalRead(fBpin);
   rBS = digitalRead(rBpin);
   lBS = digitalRead(lBpin);
 }
 boolean isAccepted() {
-  int a = digitalRead(acceptBPin);
-  while (a != HIGH) {
+  aBS = digitalRead(acceptBPin);
+  while (aBS != HIGH) {
     //not pressed
-    a = digitalRead(acceptBPin);
-    if (a == HIGH) {
+    aBS = digitalRead(acceptBPin);
+    if (aBS == HIGH) {
       return true;
       break;
     }
@@ -94,24 +94,15 @@ void switchToD() {
   directionS = true;
   lengthS = false;
 }
-void reBind() {
-  int a = digitalRead(acceptBPin);
-  int f = digitalRead(fBpin);
-  int r = digitalRead(rBpin);
-  int l = digitalRead(lBpin);
-}
 void doSelections(boolean d, boolean t) {
   hasRun = false;
   if (d) {
     resetLCD();
     message = "Select direction:  "; //last = [18]
     print(15);
-    int a = digitalRead(acceptBPin);
-    int f = digitalRead(fBpin);
-    int r = digitalRead(rBpin);
-    int l = digitalRead(lBpin);
+    reBind();
     while (!isAccepted and not hasRun) {
-      if (f == HIGH) {
+      if (fBS == HIGH) {
         actions[-1] = "F ";
         message[-1] = "F";
         lcd.clear();
@@ -122,7 +113,7 @@ void doSelections(boolean d, boolean t) {
           break;
         }
       }
-      if (r == HIGH) {
+      if (rBS == HIGH) {
         actions[-1]= "R ";
         message[-1]= "R";
         lcd.clear();
@@ -133,7 +124,7 @@ void doSelections(boolean d, boolean t) {
           break;
         }
       }
-      if (l == HIGH) {
+      if (lBS == HIGH) {
         actions[-1]= "L ";
         message[-1]= "L";
         lcd.clear();
@@ -148,21 +139,18 @@ void doSelections(boolean d, boolean t) {
   }
   if (t) {
     t = 0;
-    int a = digitalRead(acceptBPin);
-    int f = digitalRead(fBpin);
-    int r = digitalRead(rBpin);
-    int l = digitalRead(lBpin);
+    reBind();
     resetLCD();
     message = "Select time (r = +, l = -):  ";
     print(15);
     while (!isAccepted) {
       Serial.println(t);
-      if (r) {
+      if (rBS) {
         if (t<9){
           t += 1;
         }
       }
-      if (l) {
+      if (lBS) {
         if (t >= 1) {
           t -= 1;
         }
