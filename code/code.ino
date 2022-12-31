@@ -8,9 +8,8 @@ String m = "", actions = " ";
 //button
 const int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;  // using 7-4 as inputs
 int aBS = 0, fBS = 0, bBS = 0, rBS = 0, lBS = 0;            //button states
-const int motorBR = 3, motorBL = 2, motorFR = 1, motorFL = 0;
 //distance
-const int dPinEcho = 14, dPinTrig = 15;
+const int dPinEcho = 3, dPinTrig = 2;
 long duration;
 int distance, limit = 4;
 //runtime
@@ -32,10 +31,9 @@ void setup() {
 void loop() {
   reBind();
   lcd.cursor();
-  if (not isStarted) {
+  while (not isStarted) {
     if (aBS == HIGH) {
-      isStarted = true;
-      directionS = true;
+      start();
     }
   }
   while (isStarted and not runOVR) {
@@ -217,6 +215,10 @@ void getRuntime() {
   currentTime = 0;
   currentTime = millis();
   runtime = currentTime - startTime;
+}
+void start(){
+  isStarted = true;
+  directionS = true;
 }
 void runForward(int t) {
   while (runtime * 1000 > t) {
