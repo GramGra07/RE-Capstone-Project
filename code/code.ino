@@ -6,7 +6,7 @@ String message = "Plz tap center button";
 int x = message.length() - 1, y = 0, t = 0;
 String m = "", actions = " ";
 //button
-const int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;  // using 7-4 as inputs
+int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;  // using 7-4 as inputs
 int aBS = 0, fBS = 0, bBS = 0, rBS = 0, lBS = 0;            //button states
 //distance
 const int dPinEcho = 3, dPinTrig = 2;
@@ -32,14 +32,14 @@ void loop() {
   reBind();
   lcd.cursor();
   while (not isStarted) {
-    if (aBS == HIGH) {
+    if (isAccepted()) {
       start();
     }
   }
-  while (isStarted and not runOVR) {
+  if (isStarted and not runOVR) {
     doSelections(directionS, lengthS);
     if (runOVR) {
-      break;
+      //
     }
   }
   while (isStarted and runOVR) {
@@ -82,19 +82,38 @@ void switchToD() {
   directionS = true;
   lengthS = false;
 }
+boolean check() {
+  fBS = digitalRead(6);
+  rBS = digitalRead(5);
+  lBS = digitalRead(4);
+  while (fBS != HIGH && rBS != HIGH && lBS != HIGH) {
+    //not pressed
+    fBS = digitalRead(6);
+    rBS = digitalRead(5);
+    lBS = digitalRead(4);
+    if (fBS == HIGH || rBS == HIGH || lBS == HIGH) {
+      return true;
+      break;
+    }
+  }
+}
 void doSelections(boolean d, boolean t) {
   hasRun = false;
+  resetLCD();
   if (d) {
-    resetLCD();
     message = "Select direction:  ";  //last = [18]
     print(15);
     reBind();
     while (!isAccepted and not hasRun) {
+      while (check() != true){
+        Serial.println("j");
+      }
       if (fBS == HIGH) {
         actions[-1] = "F ";
         message[-1] = "F";
         lcd.clear();
         print(15);
+        Serial.println("hi");
         if (isAccepted) {
           switchToL();
           hasRun = true;
@@ -216,7 +235,7 @@ void getRuntime() {
   currentTime = millis();
   runtime = currentTime - startTime;
 }
-void start(){
+void start() {
   isStarted = true;
   directionS = true;
 }
