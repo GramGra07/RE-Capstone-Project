@@ -26,10 +26,7 @@ void setup() {
   pinMode(lBpin, INPUT);
   Serial.begin(9600);
   lcd.begin(16, 2);
-  print(15);  //starting message
-}
-void loop() {
-  reBind();
+  print(15);  //starting messagereBind();
   lcd.cursor();
   while (not isStarted) {
     if (isAccepted()) {
@@ -38,9 +35,6 @@ void loop() {
   }
   if (isStarted and not runOVR) {
     doSelections(directionS, lengthS);
-    if (runOVR) {
-      //
-    }
   }
   while (isStarted and runOVR) {
     indexIntoActions();
@@ -48,6 +42,8 @@ void loop() {
       break;
     }
   }
+}
+void loop() {
   //Serial.println(actions);
 }
 void resetLCD() {
