@@ -26,7 +26,7 @@ void setup() {
   pinMode(lBpin, INPUT);
   Serial.begin(9600);
   lcd.begin(16, 2);
-  print(15);  //starting messagereBind();
+  print(15);  //starting messageBind();
   lcd.cursor();
   while (not isStarted) {
     if (isAccepted()) {
@@ -101,15 +101,11 @@ void doSelections(boolean d, boolean t) {
     print(15);
     reBind();
     while (!isAccepted and not hasRun) {
-      while (check() != true){
-        Serial.println("j");
-      }
       if (fBS == HIGH) {
         actions[-1] = "F ";
         message[-1] = "F";
         lcd.clear();
         print(15);
-        Serial.println("hi");
         if (isAccepted) {
           switchToL();
           hasRun = true;
