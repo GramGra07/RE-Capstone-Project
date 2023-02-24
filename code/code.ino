@@ -4,7 +4,8 @@ const int rs = 13, en = 12, d4 = 11, d5 = 10, d6 = 9, d7 = 8;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 String message = "Plz tap center button";
 int x = message.length() - 1, y = 0, t = 0;
-String m = "", actions = " ";
+String m = "";
+String actions= " ";
 //button
 int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;  // using 7-4 as inputs
 int aBS = 0, fBS = 0, bBS = 0, rBS = 0, lBS = 0;            //button states
@@ -15,7 +16,7 @@ int distance, limit = 4;
 //runtime
 double startTime = millis(), currentTime, runtime;
 //other
-boolean isStarted = false, directionS = false, lengthS = false, runOVR = false, hasRun = false;
+boolean isStarted = false, runOVR = false;
 //Serial.println(message.length());
 void setup() {
   pinMode(dPinTrig, OUTPUT);
@@ -34,7 +35,7 @@ void setup() {
     }
   }
   if (isStarted and not runOVR) {
-    doSelections(directionS, lengthS);
+    doSelections(true, false);
   }
   while (isStarted and runOVR) {
     indexIntoActions();
@@ -53,96 +54,59 @@ void resetLCD() {
   lcd.clear();
   message = "";
 }
-void reBind() {
-  aBS = digitalRead(acceptBPin);
-  fBS = digitalRead(fBpin);
-  rBS = digitalRead(rBpin);
-  lBS = digitalRead(lBpin);
-}
 boolean isAccepted() {
-  aBS = digitalRead(acceptBPin);
-  while (aBS != HIGH) {
+  while (!digitalRead(acceptBPin)) {
     //not pressed
-    aBS = digitalRead(acceptBPin);
-    if (aBS == HIGH) {
+    if (digitalRead(acceptBPin)) {
       return true;
       break;
     }
+    return false;
   }
 }
 void switchToL() {
-  lengthS = true;
-  directionS = false;
+  doSelections(false,true);
 }
 void switchToD() {
-  directionS = true;
-  lengthS = false;
+  doSelections(true,false);
 }
-boolean check() {
-  fBS = digitalRead(6);
-  rBS = digitalRead(5);
-  lBS = digitalRead(4);
-  while (fBS != HIGH && rBS != HIGH && lBS != HIGH) {
-    //not pressed
-    fBS = digitalRead(6);
-    rBS = digitalRead(5);
-    lBS = digitalRead(4);
-    if (fBS == HIGH || rBS == HIGH || lBS == HIGH) {
-      return true;
-      break;
-    }
-  }
+String btos(bool x){
+  if(x) return "True";
+  return "False";
 }
 void doSelections(boolean d, boolean t) {
-  hasRun = false;
   resetLCD();
   if (d) {
     message = "Select direction:  ";  //last = [18]
     print(15);
-    reBind();
-    while (!isAccepted and not hasRun) {
-      if (fBS == HIGH) {
-        actions[-1] = "F ";
-        message[-1] = "F";
+    while (!isAccepted()) {
+      Serial.println(actions);
+      if (digitalRead(fBpin)) {
+        actions[actions.length()-1]='F';
+        message[message.length()-1]= 'F';
         lcd.clear();
         print(15);
-        if (isAccepted) {
-          switchToL();
-          hasRun = true;
-          break;
-        }
       }
-      if (rBS == HIGH) {
-        actions[-1] = "R ";
-        message[-1] = "R";
+      if (digitalRead(rBpin)) {
+        actions[actions.length()-1] = 'R';
+        message[message.length()-1] = 'R';
         lcd.clear();
         print(15);
-        if (isAccepted) {
-          switchToL();
-          hasRun = true;
-          break;
-        }
       }
-      if (lBS == HIGH) {
-        actions[-1] = "L ";
-        message[-1] = "L";
+      if (digitalRead(lBpin)) {
+        actions[actions.length()-1] = 'L';
+        message[message.length()-1] = 'L';
         lcd.clear();
         print(15);
-        if (isAccepted) {
-          switchToL();
-          hasRun = true;
-          break;
-        }
       }
     }
   }
   if (t) {
     t = 0;
-    reBind();
     resetLCD();
     message = "Select time (r = +, l = -):  ";
     print(15);
-    while (!isAccepted) {
+    while (!isAccepted()) {
       Serial.println(t);
       if (rBS) {
         if (t < 9) {
@@ -156,7 +120,7 @@ void doSelections(boolean d, boolean t) {
       }
       message[-1] = t;
       actions[-1] = t;
-      lcd.print(message);
+      lcd.print(15);
       if (isAccepted) {
         switchToD();
         break;
@@ -229,7 +193,6 @@ void getRuntime() {
 }
 void start() {
   isStarted = true;
-  directionS = true;
 }
 void runForward(int t) {
   while (runtime * 1000 > t) {
