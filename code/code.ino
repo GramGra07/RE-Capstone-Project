@@ -6,9 +6,11 @@ String message = "Plz tap center button";
 int x = message.length() - 1, y = 0, t = 0;
 String m = "";
 String actions= " ";
+int accepted = 0;
 //button
 int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;  // using 7-4 as inputs
-int aBS = 0, fBS = 0, bBS = 0, rBS = 0, lBS = 0;            //button states
+int beginTime = 5, time = beginTime;
+boolean firstTime = true,isHigh = false;
 //distance
 const int dPinEcho = 3, dPinTrig = 2;
 long duration;
@@ -30,22 +32,15 @@ void setup() {
   print(15);  //starting messageBind();
   lcd.cursor();
   while (not isStarted) {
-    if (isAccepted()) {
-      start();
-    }
-  }
-  if (isStarted and not runOVR) {
-    doSelections(true, false);
-  }
-  while (isStarted and runOVR) {
-    indexIntoActions();
-    if (!isStarted) {
-      break;
+    if (digitalRead(acceptBPin)) {
+      isHigh = true;
+      doSelections(true, false);
+      isStarted = true;
     }
   }
 }
 void loop() {
-  //Serial.println(actions);
+  
 }
 void resetLCD() {
   x = 0;
@@ -54,17 +49,7 @@ void resetLCD() {
   lcd.clear();
   message = "";
 }
-boolean isAccepted() {
-  while (!digitalRead(acceptBPin)) {
-    //not pressed
-    if (digitalRead(acceptBPin)) {
-      return true;
-      break;
-    }
-    return false;
-  }
-}
-void switchToL() {
+void switchToT() {
   doSelections(false,true);
 }
 void switchToD() {
@@ -75,64 +60,103 @@ String btos(bool x){
   return "False";
 }
 void doSelections(boolean d, boolean t) {
-  resetLCD();
-  if (d) {
+  while (d and !runOVR) {
     message = "Select direction:  ";  //last = [18]
-    print(15);
-    while (!isAccepted()) {
-      Serial.println(actions);
-      if (digitalRead(fBpin)) {
+    if (firstTime){
+      lcd.clear();
+      print(15);
+      firstTime = false;
+    }
+    while (!digitalRead(acceptBPin)) {
+      if (!digitalRead(fBpin) and !digitalRead(rBpin) and !digitalRead(lBpin) and !digitalRead(acceptBPin)){
+        isHigh = false;
+      }
+      if (digitalRead(fBpin) and !isHigh) {
         actions[actions.length()-1]='F';
         message[message.length()-1]= 'F';
         lcd.clear();
         print(15);
       }
-      if (digitalRead(rBpin)) {
+      if (digitalRead(rBpin) and !isHigh) {
         actions[actions.length()-1] = 'R';
         message[message.length()-1] = 'R';
         lcd.clear();
         print(15);
       }
-      if (digitalRead(lBpin)) {
+      if (digitalRead(lBpin) and !isHigh) {
         actions[actions.length()-1] = 'L';
         message[message.length()-1] = 'L';
         lcd.clear();
         print(15);
       }
+      if (digitalRead(acceptBPin) and message[message.length()-1] == ' ' and !isHigh){
+        //Serial.println("here");
+        t = false;
+        d = false;
+        runOVR = true;
+        resetLCD();
+        indexIntoActions();
+        return;
+      }
+      else if (digitalRead(acceptBPin) and !isHigh){
+        actions+=' ';
+        Serial.println(actions);
+        resetLCD();
+        firstTime = true;
+        doSelections(false,true);
+      }
     }
   }
-  if (t) {
-    t = 0;
-    resetLCD();
-    message = "Select time (r = +, l = -):  ";
-    print(15);
-    while (!isAccepted()) {
-      Serial.println(t);
-      if (rBS) {
-        if (t < 9) {
-          t += 1;
-        }
+  while (t and !runOVR) {
+    time = beginTime;
+    message = "Select time (r = +, l = -):  "+String(time);
+    if (firstTime){
+      lcd.clear();
+      print(15);
+      firstTime = false;
+    }
+    while (!digitalRead(acceptBPin)) {
+      if (!digitalRead(rBpin) and !digitalRead(lBpin)){
+        isHigh = false;
       }
-      if (lBS) {
-        if (t >= 1) {
-          t -= 1;
+      if (digitalRead(rBpin) and !isHigh) {
+        if (time < 9) {
+          time ++;
         }
+        lcd.clear();
+        String tl = String(time);
+        message[message.length()-1] = tl[0];
+        print(15);
+        isHigh = true;
       }
-      message[-1] = t;
-      actions[-1] = t;
-      lcd.print(15);
-      if (isAccepted) {
-        switchToD();
-        break;
+      if (digitalRead(lBpin) and !isHigh) {
+        if(time > 1){
+          time --;
+        }
+        lcd.clear();
+        String tl = String(time);
+        message[message.length()-1] = tl[0];
+        print(15);
+        isHigh = true;
+      }
+      if (digitalRead(acceptBPin)){
+        String tl = String(time);
+        actions[actions.length()-1] = tl[0];
+        actions+=' ';
+        Serial.println(actions);
+        resetLCD();
+        firstTime = true;
+        doSelections(true,false);
       }
     }
   }
 }
 void indexIntoActions() {
+  message = "Running, watch out!";
+  print(15);
+  actions.replace(" ","");
   for (int i = 0; i < actions.length(); i += 2) {
-    if (not isDigit(actions[i]) and isDigit(actions[i + 1])) {
-      runMotors(String(actions[i]), actions[i + 1]);
-    }
+    runMotors(String(actions[i]), actions[i + 1]);
   }
 }
 void print(int start) {  //start will usually be 16 but changed to make not cut off words
@@ -167,7 +191,10 @@ int runDistance() {
   Serial.println(" cm");
   return distance;
 }
-void runMotors(String d, int t) {  //distance and time
+void runMotors(String d, char t) {  //distance and time
+  //Serial.println(t);
+  t = int(t)-int('0');
+  Serial.println(t);
   if (d == "F") {
     //go forward
     runForward(t);
@@ -190,9 +217,6 @@ void getRuntime() {
   currentTime = 0;
   currentTime = millis();
   runtime = currentTime - startTime;
-}
-void start() {
-  isStarted = true;
 }
 void runForward(int t) {
   while (runtime * 1000 > t) {
