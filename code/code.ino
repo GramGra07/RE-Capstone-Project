@@ -1,4 +1,3 @@
-//used pins (13,12,11,10,9,8,7,6,5,4)
 //lcd
 #include <LiquidCrystal.h>
 const int rs = 13, en = 12, d4 = 11, d5 = 10, d6 = 9, d7 = 8;
@@ -9,9 +8,17 @@ String m = "";
 String actions= " ";
 int accepted = 0;
 //button
-int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;  // using 7-4 as inputs
+int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4; 
 int beginTime = 5, time = beginTime;
+int lEpin,rEpin;
 boolean firstTime = true,isHigh = false;
+int enA = 27;
+int in1 = 26;
+int in2 = 25;
+// Motor B connections
+int enB = 23;
+int in3 = 24;
+int in4 = 22;
 //distance
 //const int dPinEcho = 3, dPinTrig = 2;
 //long duration;
@@ -21,6 +28,21 @@ boolean firstTime = true,isHigh = false;
 //other
 boolean isStarted = false, runOVR = false;
 void setup() {
+  pinMode(enA, OUTPUT);
+	pinMode(enB, OUTPUT);
+	pinMode(in1, OUTPUT);
+	pinMode(in2, OUTPUT);
+	pinMode(in3, OUTPUT);
+	pinMode(in4, OUTPUT);
+	pinMode(lEpin, INPUT);
+	pinMode(rEpin, INPUT);
+	
+	// Turn off motors - Initial state
+	digitalWrite(in1, LOW);
+	digitalWrite(in2, LOW);
+	digitalWrite(in3, LOW);
+	digitalWrite(in4, LOW);
+
   pinMode(acceptBPin, INPUT);
   pinMode(fBpin, INPUT);
   pinMode(rBpin, INPUT);
@@ -195,11 +217,40 @@ void runMotors(String d, char t) {  //distance and time
   }
 }
 void runForward(int t) {
-  while (runtime * 1000 > t) {
-    //setMotorPower
-    if (runDistance < limit) {
-      isStarted = false;
-      break;
-    }
-  }
+  analogWrite(enA, 255);
+	analogWrite(enB, 255);
+
+	digitalWrite(in1, HIGH);
+	digitalWrite(in2, LOW);
+  
+	digitalWrite(in3, HIGH);
+	digitalWrite(in4, LOW);
+  
+}
+void turnRight(){
+  analogWrite(enA, 255);
+	analogWrite(enB, 255);
+
+	digitalWrite(in1, HIGH);
+	digitalWrite(in2, LOW);
+  
+	digitalWrite(in3, LOW);
+	digitalWrite(in4, HIGH);
+
+}
+void turnLeft(){
+  analogWrite(enA, 255);
+	analogWrite(enB, 255);
+
+	digitalWrite(in1, LOW);
+	digitalWrite(in2, HIGH);
+  
+	digitalWrite(in3, HIGH);
+	digitalWrite(in4, LOW);
+}
+void stopMotors(){
+	digitalWrite(in1, LOW);
+	digitalWrite(in2, LOW);
+	digitalWrite(in3, LOW);
+	digitalWrite(in4, LOW);
 }
