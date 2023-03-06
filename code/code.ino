@@ -1,4 +1,4 @@
-//used pins (13,12,11,10,9,8,7,6,5,4,3,2)
+//used pins (13,12,11,10,9,8,7,6,5,4)
 //lcd
 #include <LiquidCrystal.h>
 const int rs = 13, en = 12, d4 = 11, d5 = 10, d6 = 9, d7 = 8;
@@ -13,17 +13,14 @@ int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4;  // using 7-4 as inputs
 int beginTime = 5, time = beginTime;
 boolean firstTime = true,isHigh = false;
 //distance
-const int dPinEcho = 3, dPinTrig = 2;
-long duration;
-int distance, limit = 4;
+//const int dPinEcho = 3, dPinTrig = 2;
+//long duration;
+//int distance, limit = 4;
 //runtime
-double startTime = millis(), currentTime, runtime;
+//double startTime = millis(), currentTime, runtime;
 //other
 boolean isStarted = false, runOVR = false;
-//Serial.println(message.length());
 void setup() {
-  pinMode(dPinTrig, OUTPUT);
-  pinMode(dPinEcho, INPUT);
   pinMode(acceptBPin, INPUT);
   pinMode(fBpin, INPUT);
   pinMode(rBpin, INPUT);
@@ -55,10 +52,6 @@ void switchToT() {
 }
 void switchToD() {
   doSelections(true,false);
-}
-String btos(bool x){
-  if(x) return "True";
-  return "False";
 }
 void doSelections(boolean d, boolean t) {
   while (d and !runOVR) {
@@ -179,19 +172,6 @@ void makeMessage(int s, int e) {
     m += message[i];
   }
 }
-int runDistance() {
-  digitalWrite(dPinTrig, LOW);
-  delayMicroseconds(2);
-  digitalWrite(dPinTrig, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(dPinTrig, LOW);
-  duration = pulseIn(dPinEcho, HIGH);
-  distance = duration * 0.034 / 2;
-  Serial.print("Distance: ");
-  Serial.print(distance);
-  Serial.println(" cm");
-  return distance;
-}
 void runMotors(String d, char t) {  //distance and time
   //Serial.println(t);
   t = int(t)-int('0');
@@ -213,11 +193,6 @@ void runMotors(String d, char t) {  //distance and time
     runForward(t);
     //stop
   }
-}
-void getRuntime() {
-  currentTime = 0;
-  currentTime = millis();
-  runtime = currentTime - startTime;
 }
 void runForward(int t) {
   while (runtime * 1000 > t) {
