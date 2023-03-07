@@ -10,8 +10,19 @@ int accepted = 0;
 //button
 int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4; 
 int beginTime = 5, time = beginTime;
-int lEpin,rEpin;
 boolean firstTime = true,isHigh = false;
+
+int lEpin = 46;
+int lCPose =0;
+int rEpin = 47;
+int rCPose =0;
+boolean lEHigh = false;
+boolean rEHigh = false;
+boolean runningForward;
+float countsPerEncoder = 6;
+float wheelDiameter = 2.75;
+float countsPerInch = countsPerEncoder/(wheelDiameter*3.14159265358);
+
 int enA = 27;
 int in1 = 26;
 int in2 = 25;
@@ -19,6 +30,8 @@ int in2 = 25;
 int enB = 23;
 int in3 = 24;
 int in4 = 22;
+
+boolean hasRun = false;
 //distance
 //const int dPinEcho = 3, dPinTrig = 2;
 //long duration;
@@ -61,6 +74,64 @@ void setup() {
 }
 void loop() {
   
+}
+void trackTicks(){
+  if (digitalRead(lEpin)==0 and !isHigh){
+    isHigh = true;
+    lCPose+=1;
+  }
+  else if (digitalRead(lEpin)==1 and isHigh){
+    isHigh = false;
+  }
+}
+void runToPosition(float r,float l){
+  if (!hasRun){
+    r*=countsPerInch;
+    l*=countsPerInch;
+    hasRun = true;
+  }
+  if (lCPose > r){
+    runningForward = false;
+  }else{
+    runningForward = true;
+  }
+  while ((lCPose < r or rCPose < r) and ( runningForward)){
+    Serial.println(lCPose);
+    //run forward
+    if (digitalRead(lEpin)==0 and !lEHigh){
+      lEHigh = true;
+      lCPose+=1;
+    }
+    else if (digitalRead(lEpin)==1 and lEHigh){
+      lEHigh = false;
+    }
+
+    if (digitalRead(rEpin)==0 and !rEHigh){
+      rEHigh = true;
+      rCPose+=1;
+    }
+    else if (digitalRead(rEpin)==1 and rEHigh){
+      rEHigh = false;
+    }
+  }
+  while((lCPose > l or rCPose > l) and ( !runningForward)){
+    Serial.println(lCPose);
+    //run backward
+    if (digitalRead(lEpin)==0 and !lEHigh){
+      lEHigh = true;
+      lCPose-=1;
+    }
+    else if (digitalRead(lEpin)==1 and lEHigh){
+      lEHigh = false;
+    }
+    if (digitalRead(rEpin)==0 and !rEHigh){
+      rEHigh = true;
+      rCPose-=1;
+    }
+    else if (digitalRead(rEpin)==1 and rEHigh){
+      rEHigh = false;
+    }
+  }
 }
 void resetLCD() {
   x = 0;
