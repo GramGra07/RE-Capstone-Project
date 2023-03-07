@@ -75,64 +75,6 @@ void setup() {
 void loop() {
   
 }
-void trackTicks(){
-  if (digitalRead(lEpin)==0 and !isHigh){
-    isHigh = true;
-    lCPose+=1;
-  }
-  else if (digitalRead(lEpin)==1 and isHigh){
-    isHigh = false;
-  }
-}
-void runToPosition(float r,float l){
-  if (!hasRun){
-    r*=countsPerInch;
-    l*=countsPerInch;
-    hasRun = true;
-  }
-  if (lCPose > r){
-    runningForward = false;
-  }else{
-    runningForward = true;
-  }
-  while ((lCPose < r or rCPose < r) and ( runningForward)){
-    Serial.println(lCPose);
-    //run forward
-    if (digitalRead(lEpin)==0 and !lEHigh){
-      lEHigh = true;
-      lCPose+=1;
-    }
-    else if (digitalRead(lEpin)==1 and lEHigh){
-      lEHigh = false;
-    }
-
-    if (digitalRead(rEpin)==0 and !rEHigh){
-      rEHigh = true;
-      rCPose+=1;
-    }
-    else if (digitalRead(rEpin)==1 and rEHigh){
-      rEHigh = false;
-    }
-  }
-  while((lCPose > l or rCPose > l) and ( !runningForward)){
-    Serial.println(lCPose);
-    //run backward
-    if (digitalRead(lEpin)==0 and !lEHigh){
-      lEHigh = true;
-      lCPose-=1;
-    }
-    else if (digitalRead(lEpin)==1 and lEHigh){
-      lEHigh = false;
-    }
-    if (digitalRead(rEpin)==0 and !rEHigh){
-      rEHigh = true;
-      rCPose-=1;
-    }
-    else if (digitalRead(rEpin)==1 and rEHigh){
-      rEHigh = false;
-    }
-  }
-}
 void resetLCD() {
   x = 0;
   y = 0;
