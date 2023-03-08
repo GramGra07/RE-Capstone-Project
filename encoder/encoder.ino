@@ -2,7 +2,7 @@ int rEpin = 47;
 int lEpin = 46;
 
 int lCPose =0;
-
+int i =0;
 int rCPose =0;
 boolean track = true;
 boolean lEHigh = false;
@@ -22,6 +22,13 @@ int in2 = 25;
 int enB = 23;
 int in3 = 24;
 int in4 = 22;
+
+int minimumDist = 5;
+int trigPin = 39;
+int echoPin = 38;
+// defines variables
+long duration;
+int distance;
 void setup() {
   pinMode(enA, OUTPUT);
 	pinMode(enB, OUTPUT);
@@ -36,11 +43,25 @@ void setup() {
 	digitalWrite(in2, LOW);
 	digitalWrite(in3, LOW);
 	digitalWrite(in4, LOW);
+
+  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600);
 }
 void loop() {
-  //Serial.println(digitalRead(lEpin));
   runToPosition(-5,5);
+}
+int getDistance(){
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+  distance = int(distance);
+  Serial.println(distance);
+  return distance;
 }
 void runToPosition(int r,int l){
   if (not hasRun){
@@ -56,6 +77,10 @@ void runToPosition(int r,int l){
     }
   }
   while (rCPose < r){
+    if (getDistance()<minimumDist){
+      stopMotors();
+      break;
+    }
     //analogWrite(enA, speed);
     analogWrite(enB, speed);
     if (rRunF){
@@ -65,8 +90,6 @@ void runToPosition(int r,int l){
       digitalWrite(in3, LOW);
       digitalWrite(in4, HIGH);
     }
-
-    Serial.println(rCPose+"right");
     //run forward
     if (digitalRead(rEpin)==0 and !isHigh){
       isHigh = true;
@@ -90,8 +113,6 @@ void runToPosition(int r,int l){
       digitalWrite(in1, LOW);
       digitalWrite(in2, HIGH);
     }
-
-    Serial.println(lCPose+"left");
     //run forward
     if (digitalRead(lEpin)==0 and !isHigh){
       isHigh = true;

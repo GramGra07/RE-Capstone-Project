@@ -2,6 +2,7 @@
 #include <LiquidCrystal.h>
 const int rs = 13, en = 12, d4 = 11, d5 = 10, d6 = 9, d7 = 8;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+//message altercations
 String message = "Plz tap center button";
 int x = message.length() - 1, y = 0, t = 0;
 String m = "";
@@ -11,53 +12,50 @@ int accepted = 0;
 int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4; 
 int begindist = 5, dist = begindist;
 boolean firstTime = true,isHigh = false;
-
+//encoders
 int lEpin = 46;
 int lCPose =0;
 int rEpin = 47;
 int rCPose =0;
 boolean lEHigh = false;
 boolean rEHigh = false;
-int speed = 0.6 * 255;
-bool lRunF = true;
-bool rRunF = true;
 float countsPerEncoder = 10;
 float wheelDiameter = 2.75;
 float countsPerInch = countsPerEncoder/(wheelDiameter*3.14159265358);
-
-int enA = 27;
-int in1 = 26;
-int in2 = 25;
-// Motor B connections
-int enB = 23;
-int in3 = 24;
-int in4 = 22;
-
-boolean hasRun = false;
+//motors
+int speed = 0.6 * 255;
+bool lRunF = true;
+bool rRunF = true;
+int enA = 27, in1 = 26, in2 = 25;
+int enB = 23, in3 = 24, in4 = 22;
+//control
+boolean isStarted = false, runOVR = false,hasRun = false;
 //distance
-//const int dPinEcho = 3, dPinTrig = 2;
-//long duration;
-//int distance, limit = 4;
-//runtime
-//double startTime = millis(), currentTime, runtime;
-//other
-boolean isStarted = false, runOVR = false;
+int trigPin = 39,echoPin = 38, distance, minimumDist = 5;
+long duration;
+//run robot
+int d = 0;
+String dir = "";
 void setup() {
+  //motors
   pinMode(enA, OUTPUT);
 	pinMode(enB, OUTPUT);
 	pinMode(in1, OUTPUT);
 	pinMode(in2, OUTPUT);
 	pinMode(in3, OUTPUT);
 	pinMode(in4, OUTPUT);
+  //encoder
 	pinMode(lEpin, INPUT);
 	pinMode(rEpin, INPUT);
-	
-	// Turn off motors - Initial state
+  //distance
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT); 
+	// Turn off motors
 	digitalWrite(in1, LOW);
 	digitalWrite(in2, LOW);
 	digitalWrite(in3, LOW);
 	digitalWrite(in4, LOW);
-
+  //button inputs
   pinMode(acceptBPin, INPUT);
   pinMode(fBpin, INPUT);
   pinMode(rBpin, INPUT);
@@ -75,7 +73,6 @@ void setup() {
   }
 }
 void loop() {
-  
 }
 void resetLCD() {
   x = 0;
@@ -188,7 +185,14 @@ void indexIntoActions() {
   delay(2000);
   actions.replace(" ","");
   for (int i = 0; i < actions.length(); i += 2) {
-    runMotors(String(actions[i]), actions[i + 1]);
+    d = int(actions[i+1]);
+    dir = String(actions[i]);
+    if (dir == "R"){
+      //turn right
+    }else if (dir == "L"){
+      //turn left
+    }
+    runToPosition(d,d);
   }
 }
 void print(int start) {  //start will usually be 16 but changed to make not cut off words
@@ -210,27 +214,17 @@ void makeMessage(int s, int e) {
     m += message[i];
   }
 }
-void runMotors(String d, char t) {  //distance and dist
-  //Serial.println(t);
-  t = int(t)-int('0');
-  Serial.println(t);
-  if (d == "F") {
-    //go forward
-    runToPosition(t,t);
-    //stop
-  }
-  if (d == "R") {
-    //turn -90
-    //go forward
-    runToPosition(t,t);
-    //stop
-  }
-  if (d == "L") {
-    //turn 90
-    //go forward
-    runToPosition(t,t);
-    //stop
-  }
+int getDistance(){
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+  distance = int(distance);
+  Serial.println(distance);
+  return distance;
 }
 void runToPosition(int r,int l){
   if (not hasRun){
@@ -246,6 +240,10 @@ void runToPosition(int r,int l){
     }
   }
   while (rCPose < r){
+    if (getDistance()<minimumDist){
+      stopMotors();
+      break;
+    }
     //analogWrite(enA, speed);
     analogWrite(enB, speed);
     if (rRunF){
@@ -255,8 +253,6 @@ void runToPosition(int r,int l){
       digitalWrite(in3, LOW);
       digitalWrite(in4, HIGH);
     }
-
-    Serial.println(rCPose+"right");
     //run forward
     if (digitalRead(rEpin)==0 and !isHigh){
       isHigh = true;
@@ -271,6 +267,10 @@ void runToPosition(int r,int l){
     }
   }
   while (lCPose < l){
+    if (getDistance()<minimumDist){
+      stopMotors();
+      break;
+    }
     //analogWrite(enA, speed);
     analogWrite(enA, speed);
     if (lRunF){
@@ -280,8 +280,6 @@ void runToPosition(int r,int l){
       digitalWrite(in1, LOW);
       digitalWrite(in2, HIGH);
     }
-
-    Serial.println(lCPose+"left");
     //run forward
     if (digitalRead(lEpin)==0 and !isHigh){
       isHigh = true;
