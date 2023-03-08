@@ -74,19 +74,6 @@ void setup() {
 }
 void loop() {
 }
-void resetLCD() {
-  x = 0;
-  y = 0;
-  lcd.setCursor(x, y);
-  lcd.clear();
-  message = "";
-}
-void switchToT() {
-  doSelections(false,true);
-}
-void switchToD() {
-  doSelections(true,false);
-}
 void doSelections(boolean d, boolean t) {
   while (d and !runOVR) {
     message = "Select direction:  ";  //last = [18]
@@ -179,6 +166,12 @@ void doSelections(boolean d, boolean t) {
     }
   }
 }
+void switchToT() {
+  doSelections(false,true);
+}
+void switchToD() {
+  doSelections(true,false);
+}
 void indexIntoActions() {
   message = "Running, watch out!";
   print(15);
@@ -194,6 +187,14 @@ void indexIntoActions() {
     }
     runToPosition(d,d);
   }
+}
+//lcd
+void resetLCD() {
+  x = 0;
+  y = 0;
+  lcd.setCursor(x, y);
+  lcd.clear();
+  message = "";
 }
 void print(int start) {  //start will usually be 16 but changed to make not cut off words
   if (message.length() >= 16) {
@@ -214,6 +215,7 @@ void makeMessage(int s, int e) {
     m += message[i];
   }
 }
+//distance
 int getDistance(){
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -226,6 +228,7 @@ int getDistance(){
   Serial.println(distance);
   return distance;
 }
+//motors/encoders
 void runToPosition(int r,int l){
   if (not hasRun){
     r *= countsPerInch;
