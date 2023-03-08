@@ -9,7 +9,7 @@ String actions= " ";
 int accepted = 0;
 //button
 int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4; 
-int beginTime = 5, time = beginTime;
+int begindist = 5, dist = begindist;
 boolean firstTime = true,isHigh = false;
 
 int lEpin = 46;
@@ -18,8 +18,10 @@ int rEpin = 47;
 int rCPose =0;
 boolean lEHigh = false;
 boolean rEHigh = false;
-boolean runningForward;
-float countsPerEncoder = 6;
+int speed = 0.6 * 255;
+bool lRunF = true;
+bool rRunF = true;
+float countsPerEncoder = 10;
 float wheelDiameter = 2.75;
 float countsPerInch = countsPerEncoder/(wheelDiameter*3.14159265358);
 
@@ -137,8 +139,8 @@ void doSelections(boolean d, boolean t) {
     }
   }
   while (t and !runOVR) {
-    time = beginTime;
-    message = "Select time (r = +, l = -):  "+String(time);
+    dist = begindist;
+    message = "Select distance (r = +, l = -):  "+String(dist);
     if (firstTime){
       lcd.clear();
       print(15);
@@ -149,27 +151,27 @@ void doSelections(boolean d, boolean t) {
         isHigh = false;
       }
       if (digitalRead(rBpin) and !isHigh) {
-        if (time < 9) {
-          time ++;
+        if (dist < 9) {
+          dist ++;
         }
         lcd.clear();
-        String tl = String(time);
+        String tl = String(dist);
         message[message.length()-1] = tl[0];
         print(15);
         isHigh = true;
       }
       if (digitalRead(lBpin) and !isHigh) {
-        if(time > 1){
-          time --;
+        if(dist > 1){
+          dist --;
         }
         lcd.clear();
-        String tl = String(time);
+        String tl = String(dist);
         message[message.length()-1] = tl[0];
         print(15);
         isHigh = true;
       }
       if (digitalRead(acceptBPin)){
-        String tl = String(time);
+        String tl = String(dist);
         actions[actions.length()-1] = tl[0];
         actions+=' ';
         Serial.println(actions);
@@ -183,6 +185,7 @@ void doSelections(boolean d, boolean t) {
 void indexIntoActions() {
   message = "Running, watch out!";
   print(15);
+  delay(2000);
   actions.replace(" ","");
   for (int i = 0; i < actions.length(); i += 2) {
     runMotors(String(actions[i]), actions[i + 1]);
@@ -207,63 +210,99 @@ void makeMessage(int s, int e) {
     m += message[i];
   }
 }
-void runMotors(String d, char t) {  //distance and time
+void runMotors(String d, char t) {  //distance and dist
   //Serial.println(t);
   t = int(t)-int('0');
   Serial.println(t);
   if (d == "F") {
     //go forward
-    runForward(t);
+    runToPosition(t,t);
     //stop
   }
   if (d == "R") {
     //turn -90
     //go forward
-    runForward(t);
+    runToPosition(t,t);
     //stop
   }
   if (d == "L") {
     //turn 90
     //go forward
-    runForward(t);
+    runToPosition(t,t);
     //stop
   }
 }
-void runForward(int t) {
-  analogWrite(enA, 255);
-	analogWrite(enB, 255);
+void runToPosition(int r,int l){
+  if (not hasRun){
+    r *= countsPerInch;
+    l *= countsPerInch;
+    if (r<1){
+      r*=-1;
+      rRunF = false;
+    }
+    if (l<1){
+      l*=-1;
+      lRunF = false;
+    }
+  }
+  while (rCPose < r){
+    //analogWrite(enA, speed);
+    analogWrite(enB, speed);
+    if (rRunF){
+      digitalWrite(in3, HIGH);
+      digitalWrite(in4, LOW);
+    }else{
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, HIGH);
+    }
 
-	digitalWrite(in1, HIGH);
-	digitalWrite(in2, LOW);
-  
-	digitalWrite(in3, HIGH);
-	digitalWrite(in4, LOW);
-  
-}
-void turnRight(){
-  analogWrite(enA, 255);
-	analogWrite(enB, 255);
+    Serial.println(rCPose+"right");
+    //run forward
+    if (digitalRead(rEpin)==0 and !isHigh){
+      isHigh = true;
+      rCPose+=1;
+    }
+    else if (digitalRead(rEpin)==1 and isHigh){
+      isHigh = false;
+    }
+    if (rCPose >= r){
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, LOW);
+    }
+  }
+  while (lCPose < l){
+    //analogWrite(enA, speed);
+    analogWrite(enA, speed);
+    if (lRunF){
+      digitalWrite(in1, HIGH);
+      digitalWrite(in2, LOW);
+    }else{
+      digitalWrite(in1, LOW);
+      digitalWrite(in2, HIGH);
+    }
 
-	digitalWrite(in1, HIGH);
-	digitalWrite(in2, LOW);
-  
-	digitalWrite(in3, LOW);
-	digitalWrite(in4, HIGH);
-
-}
-void turnLeft(){
-  analogWrite(enA, 255);
-	analogWrite(enB, 255);
-
-	digitalWrite(in1, LOW);
-	digitalWrite(in2, HIGH);
-  
-	digitalWrite(in3, HIGH);
-	digitalWrite(in4, LOW);
+    Serial.println(lCPose+"left");
+    //run forward
+    if (digitalRead(lEpin)==0 and !isHigh){
+      isHigh = true;
+      lCPose+=1;
+    }
+    else if (digitalRead(lEpin)==1 and isHigh){
+      isHigh = false;
+    }
+    if (lCPose >= l){
+      digitalWrite(in1, LOW);
+      digitalWrite(in2, LOW);
+    }
+  }
 }
 void stopMotors(){
 	digitalWrite(in1, LOW);
 	digitalWrite(in2, LOW);
 	digitalWrite(in3, LOW);
 	digitalWrite(in4, LOW);
+}
+void resetEncoders(){
+  lCPose = 0;
+  rCPose = 0;
 }
