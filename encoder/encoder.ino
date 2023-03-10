@@ -49,7 +49,7 @@ void setup() {
   Serial.begin(9600);
 }
 void loop() {
-  runToPosition(-5,5);
+  runToPosition(15,15);
 }
 int getDistance(){
   digitalWrite(trigPin, LOW);
@@ -64,6 +64,8 @@ int getDistance(){
   return distance;
 }
 void runToPosition(int r,int l){
+  r *=-1;
+  l*=-1;
   if (not hasRun){
     r *= countsPerInch;
     l *= countsPerInch;
@@ -76,42 +78,23 @@ void runToPosition(int r,int l){
       lRunF = false;
     }
   }
-  while (rCPose < r){
-    if (getDistance()<minimumDist){
-      stopMotors();
-      break;
-    }
-    //analogWrite(enA, speed);
-    analogWrite(enB, speed);
-    if (rRunF){
-      digitalWrite(in3, HIGH);
-      digitalWrite(in4, LOW);
-    }else{
-      digitalWrite(in3, LOW);
-      digitalWrite(in4, HIGH);
-    }
-    //run forward
-    if (digitalRead(rEpin)==0 and !isHigh){
-      isHigh = true;
-      rCPose+=1;
-    }
-    else if (digitalRead(rEpin)==1 and isHigh){
-      isHigh = false;
-    }
-    if (rCPose >= r){
-      digitalWrite(in3, LOW);
-      digitalWrite(in4, LOW);
-    }
-  }
-  while (lCPose < l){
-    //analogWrite(enA, speed);
+  Serial.println(rCPose+lCPose);
+  while (rCPose < r and lCPose<l){
     analogWrite(enA, speed);
+    analogWrite(enB, speed);
     if (lRunF){
       digitalWrite(in1, HIGH);
       digitalWrite(in2, LOW);
     }else{
       digitalWrite(in1, LOW);
       digitalWrite(in2, HIGH);
+    }
+    if (rRunF){
+      digitalWrite(in3, HIGH);
+      digitalWrite(in4, LOW);
+    }else{
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, HIGH);
     }
     //run forward
     if (digitalRead(lEpin)==0 and !isHigh){
@@ -121,10 +104,26 @@ void runToPosition(int r,int l){
     else if (digitalRead(lEpin)==1 and isHigh){
       isHigh = false;
     }
+    if (digitalRead(rEpin)==0 and !isHigh){
+      isHigh = true;
+      rCPose+=1;
+    }
+    else if (digitalRead(rEpin)==1 and isHigh){
+      isHigh = false;
+    }
     if (lCPose >= l){
       digitalWrite(in1, LOW);
       digitalWrite(in2, LOW);
     }
+    if (rCPose >= r){
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, LOW);
+    }
+    //if (getDistance()<minimumDist){
+    //  stopMotors();
+    //  break;
+    //}
+    
   }
 }
 void stopMotors(){
