@@ -1,5 +1,5 @@
-int rEpin = 47;
-int lEpin = 46;
+int lEpin = 48;
+int rEpin = 46;
 
 int lCPose =0;
 int i =0;
@@ -9,12 +9,14 @@ boolean lEHigh = false;
 boolean rEHigh = false;
 boolean isHigh = false;
 boolean hasRun = false;
+boolean finished = false;
 bool lRunF = true;
 bool rRunF = true;
-float countsPerEncoder = 10;
-float wheelDiameter = 2.75;
-float countsPerInch = countsPerEncoder/(wheelDiameter*3.14159265358);
-int speed = 0.6 * 255;
+int countsPerEncoder = 10;
+int wheelDiameter = 7;
+//float countsPerCM = (countsPerEncoder/(wheelDiameter*3.14159265358));
+double countsPerCM = 0.45;
+int speed = 1 * 255;
 int enA = 27;
 int in1 = 26;
 int in2 = 25;
@@ -49,7 +51,7 @@ void setup() {
   Serial.begin(9600);
 }
 void loop() {
-  runToPosition(15,15);
+  runToPosition(8,8);
 }
 int getDistance(){
   digitalWrite(trigPin, LOW);
@@ -63,12 +65,12 @@ int getDistance(){
   Serial.println(distance);
   return distance;
 }
-void runToPosition(int r,int l){
-  r *=-1;
-  l*=-1;
+void runToPosition(double r,double l){
   if (not hasRun){
-    r *= countsPerInch;
-    l *= countsPerInch;
+    r *= -countsPerCM;
+    l *= -countsPerCM;
+    r*=4;
+    l*=4;
     if (r<1){
       r*=-1;
       rRunF = false;
@@ -77,9 +79,14 @@ void runToPosition(int r,int l){
       l*=-1;
       lRunF = false;
     }
+    r = round(r);
+    l = round(l);
   }
-  Serial.println(rCPose+lCPose);
-  while (rCPose < r and lCPose<l){
+  while (rCPose < r or lCPose<l and not finished){
+    Serial.println("l",lCPose);
+    Serial.println("r",rCPose);
+    rCPose = int(rCPose);
+    lCPose = int(lCPose);
     analogWrite(enA, speed);
     analogWrite(enB, speed);
     if (lRunF){
@@ -101,14 +108,14 @@ void runToPosition(int r,int l){
       isHigh = true;
       lCPose+=1;
     }
-    else if (digitalRead(lEpin)==1 and isHigh){
+    if (digitalRead(lEpin)==1){
       isHigh = false;
     }
     if (digitalRead(rEpin)==0 and !isHigh){
       isHigh = true;
       rCPose+=1;
     }
-    else if (digitalRead(rEpin)==1 and isHigh){
+    if (digitalRead(rEpin)==1){
       isHigh = false;
     }
     if (lCPose >= l){
@@ -118,6 +125,10 @@ void runToPosition(int r,int l){
     if (rCPose >= r){
       digitalWrite(in3, LOW);
       digitalWrite(in4, LOW);
+    }
+    if (lCPose>=l and rCPose>=r){
+      finished = true;
+      break;
     }
     //if (getDistance()<minimumDist){
     //  stopMotors();
