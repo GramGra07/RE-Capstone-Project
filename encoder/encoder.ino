@@ -52,7 +52,8 @@ void setup() {
   Serial.begin(9600);
 }
 void loop() {
-  runToPosition(30,30);
+  turnRight();
+  turnLeft();
 }
 int getDistance(){
   digitalWrite(trigPin, LOW);
@@ -65,6 +66,12 @@ int getDistance(){
   distance = int(distance);
   Serial.println(distance);
   return distance;
+}
+void turnLeft(){
+  runToPosition(22,-10);
+}
+void turnRight(){
+  runToPosition(-10,27);
 }
 void runToPosition(double r,double l){
   if (not hasRun){
@@ -83,7 +90,7 @@ void runToPosition(double r,double l){
     r = round(r);
     l = round(l);
   }
-  while (rCPose < r or lCPose<l and not finished){
+  while ((rCPose < r or lCPose<l) and not finished){
     rCPose = int(rCPose);
     lCPose = int(lCPose);
     analogWrite(enA, speed);
@@ -127,13 +134,14 @@ void runToPosition(double r,double l){
     }
     if (lCPose>=l and rCPose>=r){
       finished = true;
+      resetEncoders();
       break;
     }
-    Serial.println(getDistance());
-    if (getDistance()<=minimumDist){
-      stopMotors();
-      break;
-    }
+    //if (getDistance()<=(minimumDist/10)){
+    //  stopMotors();
+    //  finished = true;
+    //  break;
+    //}
     
   }
 }
