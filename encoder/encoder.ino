@@ -1,10 +1,8 @@
 int lEpin = 48;
 int rEpin = 46;
-
 int lCPose =0;
 int i =0;
 int rCPose =0;
-boolean track = true;
 boolean lEHigh = false;
 boolean rEHigh = false;
 boolean isHighR = false;
@@ -15,8 +13,7 @@ bool lRunF = true;
 bool rRunF = true;
 int countsPerEncoder = 10;
 int wheelDiameter = 7;
-//float countsPerCM = (countsPerEncoder/(wheelDiameter*3.14159265358));
-double countsPerCM = 0.09;//0.45
+double countsPerCM = 0.09;//0.45//will translate distance to counts of the encoder
 int speed = 1 * 255;
 int enA = 27;
 int in1 = 26;
@@ -51,11 +48,11 @@ void setup() {
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600);
 }
-void loop() {
+void loop() {//test loop
   turnRight();
   turnLeft();
 }
-int getDistance(){
+int getDistance(){//returns distance in cm
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
@@ -64,28 +61,28 @@ int getDistance(){
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
   distance = int(distance);
-  Serial.println(distance);
+  Serial.println(distance);//prints out distance
   return distance;
 }
 void turnLeft(){
-  runToPosition(22,-10);
+  runToPosition(22,-10);//calculated distances to turn 90 degrees
 }
 void turnRight(){
-  runToPosition(-10,27);
+  runToPosition(-10,27);//calculated distances to turn 90 degrees to the right
 }
 void runToPosition(double r,double l){
-  if (not hasRun){
+  if (not hasRun){//only first time
     r *= -countsPerCM;
     l *= -countsPerCM;
     r*=4;
     l*=4;
     if (r<1){
       r*=-1;
-      rRunF = false;
+      rRunF = false;//is not running forward
     }
     if (l<1){
       l*=-1;
-      lRunF = false;
+      lRunF = false;//not running forward
     }
     r = round(r);
     l = round(l);
@@ -93,37 +90,41 @@ void runToPosition(double r,double l){
   while ((rCPose < r or lCPose<l) and not finished){
     rCPose = int(rCPose);
     lCPose = int(lCPose);
-    analogWrite(enA, speed);
+    analogWrite(enA, speed);//sets speed to 0.6
     analogWrite(enB, speed);
-    if (lRunF){
+    if (lRunF){//l running forward
       digitalWrite(in1, HIGH);
       digitalWrite(in2, LOW);
-    }else{
+    }else{//running back
       digitalWrite(in1, LOW);
       digitalWrite(in2, HIGH);
     }
-    if (rRunF){
+    if (rRunF){//r running forward
       digitalWrite(in3, HIGH);
       digitalWrite(in4, LOW);
-    }else{
+    }else{//running back
       digitalWrite(in3, LOW);
       digitalWrite(in4, HIGH);
     }
-    //run forward
+    //checks to see if encoder has already been counted
     if (digitalRead(lEpin)==0 and !isHighL){
       isHighL = true;
       lCPose+=1;
     }
+    //has already been counted
     if (digitalRead(lEpin)==1){
       isHighL = false;
     }
+    //checks to see if r encoder has already been counted
     if (digitalRead(rEpin)==0 and !isHighR){
       isHighR = true;
       rCPose+=1;
     }
+    //has already been counted
     if (digitalRead(rEpin)==1){
       isHighR = false;
     }
+    // if its too far, stop
     if (lCPose >= l){
       digitalWrite(in1, LOW);
       digitalWrite(in2, LOW);
@@ -137,6 +138,7 @@ void runToPosition(double r,double l){
       resetEncoders();
       break;
     }
+    //stop with distance
     //if (getDistance()<=(minimumDist/10)){
     //  stopMotors();
     //  finished = true;
