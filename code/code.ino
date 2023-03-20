@@ -3,25 +3,31 @@
 const int rs = 13, en = 12, d4 = 11, d5 = 10, d6 = 9, d7 = 8;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 //message altercations
-String message = "Plz tap center button";
-int x = message.length() - 1, y = 0, t = 0;
+String message = "Plz tap center button";//starting message
+int x = message.length() - 1, y = 0, t = 0;//gives constant variables
 String m = "";
-String actions= " ";
-int accepted = 0;
+String actions= " ";//string for the entirety of actions
+int accepted = 0;//will tell us if it will run or not
 //button
-int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4; 
-int begindist = 5, dist = begindist;
+int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4; //button pins 
+int begindist = 3, dist = begindist;//used for distance in actions
 boolean firstTime = true,isHigh = false;
 //encoders
-int lEpin = 46;
-int lCPose =0;
-int rEpin = 47;
-int rCPose =0;
+int lEpin = 46;//pin
+int lCPose = 0;//pose
+int rEpin = 47;//pin
+int rCPose = 0;//pose
 boolean lEHigh = false;
 boolean rEHigh = false;
-float countsPerEncoder = 10;
-float wheelDiameter = 2.75;
-float countsPerInch = countsPerEncoder/(wheelDiameter*3.14159265358);
+boolean isHighR = false;
+boolean isHighL = false;
+boolean hasRun = false;
+boolean finished = false;
+bool lRunF = true;
+bool rRunF = true;
+int countsPerEncoder = 10;
+int wheelDiameter = 7;
+double countsPerCM = 0.09;//0.45 // converts cm to counts
 //motors
 int speed = 0.6 * 255;
 bool lRunF = true;
@@ -31,7 +37,7 @@ int enB = 23, in3 = 24, in4 = 22;
 //control
 boolean isStarted = false, runOVR = false,hasRun = false;
 //distance
-int trigPin = 39,echoPin = 38, distance, minimumDist = 5;
+int trigPin = 39,echoPin = 38, distance, minimumDist = 7;
 long duration;
 //run robot
 int d = 0;
@@ -64,11 +70,11 @@ void setup() {
   lcd.begin(16, 2);
   print(15);  //starting messageBind();
   lcd.cursor();
-  while (not isStarted) {
-    if (digitalRead(acceptBPin)) {
+  while (not isStarted) {//waits for start
+    if (digitalRead(acceptBPin)) {//start pressed
       isHigh = true;
-      doSelections(true, false);
-      isStarted = true;
+      doSelections(true, false);//will start selection process
+      isStarted = true;//breaks out of loop
     }
   }
 }
@@ -76,23 +82,23 @@ void loop() {
 }
 void doSelections(boolean d, boolean t) {
   while (d and !runOVR) {
-    message = "Select direction:  ";  //last = [18]
+    message = "Select direction:  ";  // ask for direction
     if (firstTime){
       lcd.clear();
-      print(15);
-      firstTime = false;
+      print(15);//function to alter the string to make it multi-line
+      firstTime = false;//breaks out of running this if again
     }
-    while (!digitalRead(acceptBPin)) {
-      if (!digitalRead(fBpin) and !digitalRead(rBpin) and !digitalRead(lBpin) and !digitalRead(acceptBPin)){
+    while (!digitalRead(acceptBPin)) {//while not accepted
+      if (!digitalRead(fBpin) and !digitalRead(rBpin) and !digitalRead(lBpin) and !digitalRead(acceptBPin)){//checks that all buttons not pressed
         isHigh = false;
       }
-      if (digitalRead(fBpin) and !isHigh) {
+      if (digitalRead(fBpin) and !isHigh) {// forward has been pressed
         actions[actions.length()-1]='F';
         message[message.length()-1]= 'F';
         lcd.clear();
         print(15);
       }
-      if (digitalRead(rBpin) and !isHigh) {
+      if (digitalRead(rBpin) and !isHigh) {//right has been pressed
         actions[actions.length()-1] = 'R';
         message[message.length()-1] = 'R';
         lcd.clear();
@@ -104,8 +110,7 @@ void doSelections(boolean d, boolean t) {
         lcd.clear();
         print(15);
       }
-      if (digitalRead(acceptBPin) and message[message.length()-1] == ' ' and !isHigh){
-        //Serial.println("here");
+      if (digitalRead(acceptBPin) and message[message.length()-1] == ' ' and !isHigh){//will start going into actions and run the robot
         t = false;
         d = false;
         runOVR = true;
@@ -114,63 +119,57 @@ void doSelections(boolean d, boolean t) {
         return;
       }
       else if (digitalRead(acceptBPin) and !isHigh){
-        actions+=' ';
+        actions+=' ';//adds blank space to indicate next is empty
         Serial.println(actions);
         resetLCD();
         firstTime = true;
-        doSelections(false,true);
+        doSelections(false,true);//switch selection to distance
       }
     }
   }
   while (t and !runOVR) {
-    dist = begindist;
-    message = "Select distance (r = +, l = -):  "+String(dist);
+    dist = begindist;//automaically selects beginDist as a distance
+    message = "Select distance (r = +, l = -):  "+String(dist);//print out on the lcd
     if (firstTime){
       lcd.clear();
       print(15);
       firstTime = false;
     }
-    while (!digitalRead(acceptBPin)) {
-      if (!digitalRead(rBpin) and !digitalRead(lBpin)){
+    while (!digitalRead(acceptBPin)) {//not accepted
+      if (!digitalRead(rBpin) and !digitalRead(lBpin)){//makes sure none was pressed
         isHigh = false;
       }
-      if (digitalRead(rBpin) and !isHigh) {
+      if (digitalRead(rBpin) and !isHigh) {//pressed up/right
         if (dist < 9) {
-          dist ++;
+          dist ++;//increase if less than nine
         }
         lcd.clear();
         String tl = String(dist);
         message[message.length()-1] = tl[0];
-        print(15);
+        print(15);//prints out new distance
         isHigh = true;
       }
-      if (digitalRead(lBpin) and !isHigh) {
+      if (digitalRead(lBpin) and !isHigh) {//left/- pressed
         if(dist > 1){
-          dist --;
+          dist --;//decrease
         }
         lcd.clear();
         String tl = String(dist);
         message[message.length()-1] = tl[0];
-        print(15);
+        print(15);//show new message
         isHigh = true;
       }
-      if (digitalRead(acceptBPin)){
+      if (digitalRead(acceptBPin)){//has been accepted
         String tl = String(dist);
-        actions[actions.length()-1] = tl[0];
+        actions[actions.length()-1] = tl[0];//add it to actions
         actions+=' ';
         Serial.println(actions);
         resetLCD();
         firstTime = true;
-        doSelections(true,false);
+        doSelections(true,false);//switch selection
       }
     }
   }
-}
-void switchToT() {
-  doSelections(false,true);
-}
-void switchToD() {
-  doSelections(true,false);
 }
 void indexIntoActions() {
   message = "Running, watch out!";
@@ -192,21 +191,23 @@ void indexIntoActions() {
 void resetLCD() {
   x = 0;
   y = 0;
+  //resets cursor
   lcd.setCursor(x, y);
   lcd.clear();
+  //clears message
   message = "";
 }
 void print(int start) {  //start will usually be 16 but changed to make not cut off words
   if (message.length() >= 16) {
-    makeMessage(0, start);
-    lcd.print(m);
-    x = message.length() - start;
-    y = 1;
+    makeMessage(0, start);//make a message only through start
+    lcd.print(m);//prints first line
+    x = message.length() - start;//changes line
+    y = 1;//next line
     lcd.setCursor(0, 1);
-    makeMessage(start, message.length());
-    lcd.print(m);
+    makeMessage(start, message.length());//make a latter half message
+    lcd.print(m);//print it out
   } else {
-    lcd.print(message);
+    lcd.print(message);//will print the message
   }
 }
 void makeMessage(int s, int e) {
@@ -216,7 +217,7 @@ void makeMessage(int s, int e) {
   }
 }
 //distance
-int getDistance(){
+int getDistance(){//will return distance in cm
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
@@ -229,81 +230,14 @@ int getDistance(){
   return distance;
 }
 //motors/encoders
-void runToPosition(int r,int l){
-  if (not hasRun){
-    r *= countsPerInch;
-    l *= countsPerInch;
-    if (r<1){
-      r*=-1;
-      rRunF = false;
-    }
-    if (l<1){
-      l*=-1;
-      lRunF = false;
-    }
-  }
-  while (rCPose < r){
-    if (getDistance()<minimumDist){
-      stopMotors();
-      break;
-    }
-    //analogWrite(enA, speed);
-    analogWrite(enB, speed);
-    if (rRunF){
-      digitalWrite(in3, HIGH);
-      digitalWrite(in4, LOW);
-    }else{
-      digitalWrite(in3, LOW);
-      digitalWrite(in4, HIGH);
-    }
-    //run forward
-    if (digitalRead(rEpin)==0 and !isHigh){
-      isHigh = true;
-      rCPose+=1;
-    }
-    else if (digitalRead(rEpin)==1 and isHigh){
-      isHigh = false;
-    }
-    if (rCPose >= r){
-      digitalWrite(in3, LOW);
-      digitalWrite(in4, LOW);
-    }
-  }
-  while (lCPose < l){
-    if (getDistance()<minimumDist){
-      stopMotors();
-      break;
-    }
-    //analogWrite(enA, speed);
-    analogWrite(enA, speed);
-    if (lRunF){
-      digitalWrite(in1, HIGH);
-      digitalWrite(in2, LOW);
-    }else{
-      digitalWrite(in1, LOW);
-      digitalWrite(in2, HIGH);
-    }
-    //run forward
-    if (digitalRead(lEpin)==0 and !isHigh){
-      isHigh = true;
-      lCPose+=1;
-    }
-    else if (digitalRead(lEpin)==1 and isHigh){
-      isHigh = false;
-    }
-    if (lCPose >= l){
-      digitalWrite(in1, LOW);
-      digitalWrite(in2, LOW);
-    }
-  }
-}
-void stopMotors(){
+
+void stopMotors(){//stop all
 	digitalWrite(in1, LOW);
 	digitalWrite(in2, LOW);
 	digitalWrite(in3, LOW);
 	digitalWrite(in4, LOW);
 }
-void resetEncoders(){
+void resetEncoders(){//reset encoders to 0
   lCPose = 0;
   rCPose = 0;
 }
