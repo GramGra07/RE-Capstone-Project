@@ -90,7 +90,7 @@ void runToPosition(double r,double l){
   while ((rCPose < r or lCPose<l) and not finished){
     rCPose = int(rCPose);
     lCPose = int(lCPose);
-    analogWrite(enA, speed);//sets speed to 0.6
+    analogWrite(enA, speed);//sets speed to 100%
     analogWrite(enB, speed);
     if (lRunF){//l running forward
       digitalWrite(in1, HIGH);
