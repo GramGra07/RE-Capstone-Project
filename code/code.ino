@@ -29,15 +29,13 @@ int countsPerEncoder = 10;
 int wheelDiameter = 7;
 double countsPerCM = 0.09;//0.45 // converts cm to counts
 //motors
-int speed = 0.6 * 255;
-bool lRunF = true;
-bool rRunF = true;
+int speed = 1 * 255;
 int enA = 27, in1 = 26, in2 = 25;
 int enB = 23, in3 = 24, in4 = 22;
 //control
-boolean isStarted = false, runOVR = false,hasRun = false;
+boolean isStarted = false, runOVR = false;
 //distance
-int trigPin = 39,echoPin = 38, distance, minimumDist = 7;
+int trigPin = 39,echoPin = 38, distance, minimumDist = 10;
 long duration;
 //run robot
 int d = 0;
@@ -230,14 +228,103 @@ int getDistance(){//will return distance in cm
   return distance;
 }
 //motors/encoders
-
-void stopMotors(){//stop all
+void turnLeft(){
+  runToPosition(22,-10);//calculated to turn left
+}
+void turnRight(){
+  runToPosition(-10,27);//calculated to turn right
+}
+void runToPosition(double r,double l){
+  if (not hasRun){
+    r *= -countsPerCM;
+    l *= -countsPerCM;
+    r*=4;
+    l*=4;
+    if (r<1){
+      r*=-1;
+      rRunF = false;
+    }
+    if (l<1){
+      l*=-1;
+      lRunF = false;
+    }
+    r = round(r);
+    l = round(l);
+  }
+  while ((rCPose < r or lCPose<l) and not finished){
+    rCPose = int(rCPose);
+    lCPose = int(lCPose);
+    analogWrite(enA, speed);//set it to speed
+    analogWrite(enB, speed);
+    if (lRunF){//if running forward
+      digitalWrite(in1, HIGH);
+      digitalWrite(in2, LOW);
+    }else{//running backward
+      digitalWrite(in1, LOW);
+      digitalWrite(in2, HIGH);
+    }
+    if (rRunF){//running forward
+      digitalWrite(in3, HIGH);
+      digitalWrite(in4, LOW);
+    }else{//backwards
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, HIGH);
+    }
+    //is already counted
+    if (digitalRead(lEpin)==0 and !isHighL){
+      isHighL = true;
+      lCPose+=1;
+    }
+    //was counted, be ready to count again
+    if (digitalRead(lEpin)==1){
+      isHighL = false;
+    }
+    //check if its counted
+    if (digitalRead(rEpin)==0 and !isHighR){
+      isHighR = true;
+      rCPose+=1;
+    }
+    // was counted as a one
+    if (digitalRead(rEpin)==1){
+      isHighR = false;
+    }
+    //if it has gone to far, stop
+    if (lCPose >= l){
+      digitalWrite(in1, LOW);
+      digitalWrite(in2, LOW);
+    }
+    //gone to far, stop
+    if (rCPose >= r){
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, LOW);
+    }
+    //both to position, stop and reset
+    if (lCPose>=l and rCPose>=r){
+      finished = true;
+      resetEncoders();
+      break;
+    }
+    //stop for distance
+    if (getDistance()<=(minimumDist/10)){
+      stopMotors();
+      finished = true;
+      resetEncoders();
+      break;
+    }
+  }
+}
+void stopMotors(){
 	digitalWrite(in1, LOW);
 	digitalWrite(in2, LOW);
 	digitalWrite(in3, LOW);
 	digitalWrite(in4, LOW);
 }
-void resetEncoders(){//reset encoders to 0
+void resetEncoders(){
+  finished = false;
+  hasRun = false;
+  lRunF = true;
+  rRunF = true;
   lCPose = 0;
   rCPose = 0;
+  delay(500);
 }

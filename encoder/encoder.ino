@@ -50,8 +50,8 @@ void setup() {
   Serial.begin(9600);
 }
 void loop() {
-  turnRight();
-  turnLeft();
+  runToPosition(30,30);
+  //runToPosition(8,8);
 }
 int getDistance(){//will return distance
   digitalWrite(trigPin, LOW);
@@ -142,12 +142,12 @@ void runToPosition(double r,double l){
       break;
     }
     //stop for distance
-    //if (getDistance()<=(minimumDist/10)){
-    //  stopMotors();
-    //  finished = true;
-    //  break;
-    //}
-    
+    if (getDistance()<=(minimumDist/10)){
+      stopMotors();
+      finished = true;
+      resetEncoders();
+      break;
+    }
   }
 }
 void stopMotors(){
@@ -157,6 +157,11 @@ void stopMotors(){
 	digitalWrite(in4, LOW);
 }
 void resetEncoders(){
+  finished = false;
+  hasRun = false;
+  lRunF = true;
+  rRunF = true;
   lCPose = 0;
   rCPose = 0;
+  delay(500);
 }
