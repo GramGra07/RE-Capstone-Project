@@ -48,9 +48,10 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600);
+
+  runToPosition(30,30);
 }
 void loop() {
-  runToPosition(30,30);
   //runToPosition(8,8);
 }
 int getDistance(){//will return distance
@@ -91,6 +92,11 @@ void runToPosition(double r,double l){
   while ((rCPose < r or lCPose<l) and not finished){
     rCPose = int(rCPose);
     lCPose = int(lCPose);
+    //Serial.println("r");
+    //Serial.println(rCPose);
+    //Serial.println("l");
+    //Serial.println(lCPose);
+
     analogWrite(enA, speed);//set it to speed
     analogWrite(enB, speed);
     if (lRunF){//if running forward
