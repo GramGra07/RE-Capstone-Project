@@ -9,7 +9,7 @@ String m = "";
 String actions= " ";//string for the entirety of actions
 int accepted = 0;//will tell us if it will run or not
 //button
-int acceptBPin = 7, fBpin = 6, rBpin = 5, lBpin = 4; //button pins 
+int acceptBPin = 50, fBpin = 53, rBpin = 52, lBpin = 51; //button pins 
 int begindist = 3, dist = begindist;//used for distance in actions
 boolean firstTime = true,isHigh = false;
 //encoders
@@ -69,7 +69,7 @@ void setup() {
   print(15);  //starting messageBind();
   lcd.cursor();
   while (not isStarted) {//waits for start
-    if (digitalRead(acceptBPin)) {//start pressed
+    if (!digitalRead(acceptBPin)) {//start pressed
       isHigh = true;
       doSelections(true, false);//will start selection process
       isStarted = true;//breaks out of loop
@@ -86,29 +86,29 @@ void doSelections(boolean d, boolean t) {
       print(15);//function to alter the string to make it multi-line
       firstTime = false;//breaks out of running this if again
     }
-    while (!digitalRead(acceptBPin)) {//while not accepted
-      if (!digitalRead(fBpin) and !digitalRead(rBpin) and !digitalRead(lBpin) and !digitalRead(acceptBPin)){//checks that all buttons not pressed
+    while (digitalRead(acceptBPin)) {//while not accepted
+      if (digitalRead(fBpin) and digitalRead(rBpin) and digitalRead(lBpin) and digitalRead(acceptBPin)){//checks that all buttons not pressed
         isHigh = false;
       }
-      if (digitalRead(fBpin) and !isHigh) {// forward has been pressed
+      if (!(fBpin) and !isHigh) {// forward has been pressed
         actions[actions.length()-1]='F';
         message[message.length()-1]= 'F';
         lcd.clear();
         print(15);
       }
-      if (digitalRead(rBpin) and !isHigh) {//right has been pressed
+      if (!digitalRead(rBpin) and !isHigh) {//right has been pressed
         actions[actions.length()-1] = 'R';
         message[message.length()-1] = 'R';
         lcd.clear();
         print(15);
       }
-      if (digitalRead(lBpin) and !isHigh) {
+      if (!digitalRead(lBpin) and !isHigh) {
         actions[actions.length()-1] = 'L';
         message[message.length()-1] = 'L';
         lcd.clear();
         print(15);
       }
-      if (digitalRead(acceptBPin) and message[message.length()-1] == ' ' and !isHigh){//will start going into actions and run the robot
+      if (!digitalRead(acceptBPin) and message[message.length()-1] == ' ' and !isHigh){//will start going into actions and run the robot
         t = false;
         d = false;
         runOVR = true;
@@ -116,7 +116,7 @@ void doSelections(boolean d, boolean t) {
         indexIntoActions();
         return;
       }
-      else if (digitalRead(acceptBPin) and !isHigh){
+      else if (!digitalRead(acceptBPin) and !isHigh){
         actions+=' ';//adds blank space to indicate next is empty
         Serial.println(actions);
         resetLCD();
@@ -133,11 +133,11 @@ void doSelections(boolean d, boolean t) {
       print(15);
       firstTime = false;
     }
-    while (!digitalRead(acceptBPin)) {//not accepted
-      if (!digitalRead(rBpin) and !digitalRead(lBpin)){//makes sure none was pressed
+    while (digitalRead(acceptBPin)) {//not accepted
+      if (digitalRead(rBpin) and digitalRead(lBpin)){//makes sure none was pressed
         isHigh = false;
       }
-      if (digitalRead(rBpin) and !isHigh) {//pressed up/right
+      if (!digitalRead(rBpin) and !isHigh) {//pressed up/right
         if (dist < 9) {
           dist ++;//increase if less than nine
         }
@@ -147,7 +147,7 @@ void doSelections(boolean d, boolean t) {
         print(15);//prints out new distance
         isHigh = true;
       }
-      if (digitalRead(lBpin) and !isHigh) {//left/- pressed
+      if (!digitalRead(lBpin) and !isHigh) {//left/- pressed
         if(dist > 1){
           dist --;//decrease
         }
@@ -157,7 +157,7 @@ void doSelections(boolean d, boolean t) {
         print(15);//show new message
         isHigh = true;
       }
-      if (digitalRead(acceptBPin)){//has been accepted
+      if (!digitalRead(acceptBPin)){//has been accepted
         String tl = String(dist);
         actions[actions.length()-1] = tl[0];//add it to actions
         actions+=' ';
