@@ -320,7 +320,7 @@ void runToPosition(double r,double l){
       finished = true;
       resetEncoders();
       resetLCD();
-      message = "Stopped because "+String(missDist) +"in<"+String(minimumDist)+"in (min)";
+      message = "Stopped because distance <"+String(minimumDist)+"in (min)";//"+String(missDist) +"in
       print(16);
       break;
     }
