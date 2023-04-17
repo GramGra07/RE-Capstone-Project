@@ -49,9 +49,6 @@ void setup() {
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600);
   turnLeft();
-  runToPosition(30,30);
-  turnRight();
-  runToPosition(-30,-30);
 }
 void loop() {
   //runToPosition(8,8);
