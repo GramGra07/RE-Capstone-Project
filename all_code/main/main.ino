@@ -179,13 +179,15 @@ void indexIntoActions() {
   actions.replace(" ","");
   for (int i = 0; i < actions.length(); i += 2) {
     d = int(actions[i+1])-48;
+    d*=10;
     dir = String(actions[i]);
     if (dir == "R"){
       turnRight();
     }else if (dir == "L"){
       turnLeft();
     }
-    runToPosition(d*10,d*10);
+    //Serial.println(double(d));
+    runToPosition(d,d);
     ph = i;
   }
   if (ph >= actions.length()){
