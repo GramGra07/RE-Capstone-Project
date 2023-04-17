@@ -178,7 +178,7 @@ void indexIntoActions() {
   delay(3500);
   actions.replace(" ","");
   for (int i = 0; i < actions.length(); i += 2) {
-    d = int(actions[i+1]);
+    d = int(actions[i+1])-48;
     dir = String(actions[i]);
     if (dir == "R"){
       turnRight();
@@ -233,7 +233,7 @@ int getDistance(){//will return distance in cm
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
   distance = int(distance);
-  Serial.println(distance);
+  //Serial.println(distance);
   return distance;
 }
 //motors/encoders
@@ -320,7 +320,7 @@ void runToPosition(double r,double l){
       finished = true;
       resetEncoders();
       resetLCD();
-      message = "Stopped because distance <"+String(minimumDist)+"in (min)";//"+String(missDist) +"in
+      message = "Stopped because distance <"+String(minimumDist)+"in";//"+String(missDist) +"in
       print(16);
       break;
     }
