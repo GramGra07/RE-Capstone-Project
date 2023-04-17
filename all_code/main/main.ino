@@ -90,7 +90,7 @@ void doSelections(boolean d, boolean t) {
       if (digitalRead(fBpin) and digitalRead(rBpin) and digitalRead(lBpin) and digitalRead(acceptBPin)){//checks that all buttons not pressed
         isHigh = false;
       }
-      if (!(fBpin) and !isHigh) {// forward has been pressed
+      if (!digitalRead(fBpin) and !isHigh) {// forward has been pressed
         actions[actions.length()-1]='F';
         message[message.length()-1]= 'F';
         lcd.clear();
@@ -118,7 +118,6 @@ void doSelections(boolean d, boolean t) {
       }
       else if (!digitalRead(acceptBPin) and !isHigh){
         actions+=' ';//adds blank space to indicate next is empty
-        Serial.println(actions);
         resetLCD();
         firstTime = true;
         doSelections(false,true);//switch selection to distance
@@ -127,10 +126,10 @@ void doSelections(boolean d, boolean t) {
   }
   while (t and !runOVR) {
     dist = begindist;//automaically selects beginDist as a distance
-    message = "Select distance (r = +, l = -):  "+String(dist);//print out on the lcd
+    message = "Select distance (r=+,l=-):  "+String(dist);//print out on the lcd
     if (firstTime){
       lcd.clear();
-      print(15);
+      print(16);
       firstTime = false;
     }
     while (digitalRead(acceptBPin)) {//not accepted
@@ -144,7 +143,7 @@ void doSelections(boolean d, boolean t) {
         lcd.clear();
         String tl = String(dist);
         message[message.length()-1] = tl[0];
-        print(15);//prints out new distance
+        print(16);//prints out new distance
         isHigh = true;
       }
       if (!digitalRead(lBpin) and !isHigh) {//left/- pressed
@@ -154,7 +153,7 @@ void doSelections(boolean d, boolean t) {
         lcd.clear();
         String tl = String(dist);
         message[message.length()-1] = tl[0];
-        print(15);//show new message
+        print(16);//show new message
         isHigh = true;
       }
       if (!digitalRead(acceptBPin)){//has been accepted
@@ -170,19 +169,28 @@ void doSelections(boolean d, boolean t) {
   }
 }
 void indexIntoActions() {
+  int ph;
+  Serial.println("Running with "+actions);
+  lcd.noCursor();
   message = "Running, watch out!";
   print(15);
-  delay(2000);
+  delay(3500);
   actions.replace(" ","");
   for (int i = 0; i < actions.length(); i += 2) {
     d = int(actions[i+1]);
     dir = String(actions[i]);
     if (dir == "R"){
-      //turn right
+      turnRight();
     }else if (dir == "L"){
-      //turn left
+      turnLeft();
     }
-    runToPosition(d,d);
+    runToPosition(d*10,d*10);
+    ph = i;
+  }
+  if (ph >= actions.length()){
+    resetLCD();
+    message = "Finished "+actions;
+    print(9);
   }
 }
 //lcd
@@ -224,7 +232,8 @@ int getDistance(){//will return distance in cm
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
   distance = int(distance);
-  Serial.println(distance);
+  Serial.println("Distance: ");
+  Serial.print(distance);
   return distance;
 }
 //motors/encoders
@@ -305,10 +314,14 @@ void runToPosition(double r,double l){
       break;
     }
     //stop for distance
-    if (getDistance()<=(minimumDist/10)){
+    if (getDistance()<=(minimumDist) and getDistance()<=minimumDist){ //check not once but twice
+      int missDist = getDistance();
       stopMotors();
       finished = true;
       resetEncoders();
+      resetLCD();
+      message = "Stopped because "+String(missDist) +" < "+String(minimumDist);
+      print(16);
       break;
     }
   }
