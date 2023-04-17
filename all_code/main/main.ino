@@ -3,7 +3,7 @@
 const int rs = 13, en = 12, d4 = 11, d5 = 10, d6 = 9, d7 = 8;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 //message altercations
-String message = "Plz tap center button";//starting message
+String message = "Plz tap red button";//starting message
 int x = message.length() - 1, y = 0, t = 0;//gives constant variables
 String m = "";
 String actions= " ";//string for the entirety of actions
@@ -66,10 +66,11 @@ void setup() {
   pinMode(lBpin, INPUT);
   Serial.begin(9600);
   lcd.begin(16, 2);
-  print(15);  //starting messageBind();
-  lcd.cursor();
+  print(12);  //starting messageBind();
+  lcd.noCursor();
   while (not isStarted) {//waits for start
     if (!digitalRead(acceptBPin)) {//start pressed
+      lcd.cursor();
       isHigh = true;
       doSelections(true, false);//will start selection process
       isStarted = true;//breaks out of loop
@@ -126,7 +127,7 @@ void doSelections(boolean d, boolean t) {
   }
   while (t and !runOVR) {
     dist = begindist;//automaically selects beginDist as a distance
-    message = "Select distance (r=+,l=-):  "+String(dist);//print out on the lcd
+    message = "Select distance (l=-,r=+):  "+String(dist);//print out on the lcd
     if (firstTime){
       lcd.clear();
       print(16);
@@ -189,7 +190,7 @@ void indexIntoActions() {
   }
   if (ph >= actions.length()){
     resetLCD();
-    message = "Finished "+actions;
+    message = "Finished!";
     print(9);
   }
 }
@@ -232,8 +233,7 @@ int getDistance(){//will return distance in cm
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
   distance = int(distance);
-  Serial.println("Distance: ");
-  Serial.print(distance);
+  Serial.println(distance);
   return distance;
 }
 //motors/encoders
@@ -314,13 +314,13 @@ void runToPosition(double r,double l){
       break;
     }
     //stop for distance
-    if (getDistance()<=(minimumDist) and getDistance()<=minimumDist){ //check not once but twice
+    if (getDistance()<(minimumDist) and getDistance()<minimumDist and getDistance()<minimumDist){ //check not once but not twice, check thrice
       int missDist = getDistance();
       stopMotors();
       finished = true;
       resetEncoders();
       resetLCD();
-      message = "Stopped because "+String(missDist) +"in < "+String(minimumDist)+"in (min)";
+      message = "Stopped because "+String(missDist) +"in<"+String(minimumDist)+"in (min)";
       print(16);
       break;
     }
