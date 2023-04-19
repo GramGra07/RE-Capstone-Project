@@ -1,6 +1,5 @@
 int lEpin = 48;
 int rEpin = 46;
-
 int lCPose =0;//left pose
 int i =0;
 int rCPose =0;//right pose
@@ -48,7 +47,8 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600);
-  runToPosition(30,30);
+  //turnLeft();
+  runToPosition(30.00,30.00);
 }
 void loop() {
   //runToPosition(8,8);
@@ -62,7 +62,7 @@ int getDistance(){//will return distance
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
   distance = int(distance);
-  Serial.println(distance);
+  //Serial.println(distance);
   return distance;
 }
 void turnLeft(){
@@ -72,11 +72,12 @@ void turnRight(){
   runToPosition(-10,27);//calculated to turn right
 }
 void runToPosition(double r,double l){
+  int mult = 8*2;
   if (not hasRun){
     r *= -countsPerCM;
     l *= -countsPerCM;
-    r*=4;
-    l*=4;
+    r*=mult;
+    l*=mult;
     if (r<1){
       r*=-1;
       rRunF = false;
@@ -91,10 +92,10 @@ void runToPosition(double r,double l){
   while ((rCPose < r or lCPose<l) and not finished){
     rCPose = int(rCPose);
     lCPose = int(lCPose);
-    //Serial.println("r");
-    //Serial.println(rCPose);
-    //Serial.println("l");
-    //Serial.println(lCPose);
+    Serial.println("r");
+    Serial.println(rCPose);
+    Serial.println("l");
+    Serial.println(lCPose);
 
     analogWrite(enA, speed);//set it to speed
     analogWrite(enB, speed);
@@ -147,7 +148,7 @@ void runToPosition(double r,double l){
       break;
     }
     //stop for distance
-    if (getDistance()<=(minimumDist/10)){
+    if (getDistance()<=minimumDist and getDistance()<=minimumDist and getDistance()<=minimumDist){
       stopMotors();
       finished = true;
       resetEncoders();

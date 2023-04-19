@@ -246,11 +246,12 @@ void turnRight(){
   runToPosition(-10,27);//calculated to turn right
 }
 void runToPosition(double r,double l){
+  int mult = 8*2;
   if (not hasRun){
     r *= -countsPerCM;
     l *= -countsPerCM;
-    r*=4;
-    l*=4;
+    r*=mult;
+    l*=mult;
     if (r<1){
       r*=-1;
       rRunF = false;
@@ -265,6 +266,12 @@ void runToPosition(double r,double l){
   while ((rCPose < r or lCPose<l) and not finished){
     rCPose = int(rCPose);
     lCPose = int(lCPose);
+
+    Serial.println("r");
+    Serial.println(rCPose);
+    Serial.println("l");
+    Serial.println(lCPose);
+
     analogWrite(enA, speed);//set it to speed
     analogWrite(enB, speed);
     if (lRunF){//if running forward
@@ -316,14 +323,10 @@ void runToPosition(double r,double l){
       break;
     }
     //stop for distance
-    if (getDistance()<(minimumDist) and getDistance()<minimumDist and getDistance()<minimumDist){ //check not once but not twice, check thrice
-      int missDist = getDistance();
+    if (getDistance()<=minimumDist and getDistance()<=minimumDist and getDistance()<=minimumDist){
       stopMotors();
       finished = true;
       resetEncoders();
-      resetLCD();
-      message = "Stopped because distance <"+String(minimumDist)+"in";//"+String(missDist) +"in
-      print(16);
       break;
     }
   }
