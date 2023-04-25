@@ -1,5 +1,5 @@
 # RE-Capstone-Project
-By Graden Gentry and Zale Diawara
+# By Graden Gentry and Zale Diawara
 
 # Launch Description
 
