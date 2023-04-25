@@ -29,6 +29,7 @@ int echoPin = 38;
 // defines variables
 long duration;
 int distance;
+double d = 90;
 void setup() {
   pinMode(enA, OUTPUT);
 	pinMode(enB, OUTPUT);
@@ -48,7 +49,7 @@ void setup() {
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600);
   //turnLeft();
-  runToPosition(30.00,30.00);
+  runToPosition(d,d);
 }
 void loop() {
   //runToPosition(8,8);
@@ -92,9 +93,6 @@ void runToPosition(double r,double l){
   while ((rCPose < r or lCPose<l) and not finished){
     rCPose = int(rCPose);
     lCPose = int(lCPose);
-    Serial.println("r");
-    Serial.println(rCPose);
-    Serial.println("l");
     Serial.println(lCPose);
 
     analogWrite(enA, speed);//set it to speed
