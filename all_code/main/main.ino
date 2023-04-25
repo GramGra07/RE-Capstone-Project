@@ -10,7 +10,7 @@ String actions = " ";  //string for the entirety of actions
 int accepted = 0;      //will tell us if it will run or not
 //button
 int acceptBPin = 50, fBpin = 53, rBpin = 52, lBpin = 51;  //button pins
-int begindist = 3, dist = begindist;                      //used for distance in actions
+int begindist = 4, dist = begindist;                      //used for distance in actions
 boolean firstTime = true, isHigh = false;
 //encoders
 int lEpin = 48;  //pin
@@ -131,7 +131,7 @@ void doSelections(boolean d, boolean t) {
   }
   while (t and !runOVR) {
     dist = begindist;                                         //automaically selects beginDist as a distance
-    message = "Select distance (l=-,r=+):  " + String(dist);  //print out on the lcd
+    message = "Select distance (l=-,r=+):  " + String(dist) +"0";  //print out on the lcd
     if (firstTime) {
       lcd.clear();
       print(16);
@@ -147,7 +147,7 @@ void doSelections(boolean d, boolean t) {
         }
         lcd.clear();
         String tl = String(dist);
-        message[message.length() - 1] = tl[0];
+        message[message.length() - 2] = tl[0];
         print(16);  //prints out new distance
         isHigh = true;
       }
@@ -155,9 +155,12 @@ void doSelections(boolean d, boolean t) {
         if (dist > 1) {
           dist--;  //decrease
         }
+        if (dist == 1 and (actions[actions.length() - 2] == 'R' or actions[actions.length() - 2] == 'L')){
+          dist--;
+        }
         lcd.clear();
         String tl = String(dist);
-        message[message.length() - 1] = tl[0];
+        message[message.length() - 2] = tl[0];
         print(16);  //show new message
         isHigh = true;
       }
@@ -189,12 +192,13 @@ void indexIntoActions() {
     }
     dir = String(actions[i]);
     if (dir == "R") {
-      turnRight();
+      runToPosition(-10,10);
     } else if (dir == "L") {
       turnLeft();
     }
-    //Serial.println(double(d));
-    runToPosition(d, d);
+    if (d != 0){
+      runToPosition(d, d);
+    }
     ph = i;
   }
   if (ph >= actions.length()) {
@@ -247,10 +251,10 @@ int getDistance() {  //will return distance in cm
 }
 //motors/encoders
 void turnLeft() {
-  runToPosition(22, -10);  //calculated to turn left
+  runToPosition(10, -10);  //calculated to turn left
 }
 void turnRight() {
-  runToPosition(-10, 27);  //calculated to turn right
+  runToPosition(-10, 10);  //calculated to turn right
 }
 int counter = 1;
 void runToPosition(double r, double l) {
@@ -295,6 +299,10 @@ void runToPosition(double r, double l) {
     analogWrite(enB, speed);
     //both to position, stop and reset
     if (lCPose >= l and rCPose >= r) {
+      resetLCD();
+      message = "Done!";
+      print(12);
+      stopMotors();
       finished = true;
       resetEncoders();
       break;

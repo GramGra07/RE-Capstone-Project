@@ -48,8 +48,8 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600);
-  //turnLeft();
-  runToPosition(d,d);
+  turnLeft();
+  //runToPosition(d,d);
 }
 void loop() {
   //runToPosition(8,8);
@@ -67,91 +67,92 @@ int getDistance(){//will return distance
   return distance;
 }
 void turnLeft(){
-  runToPosition(22,-10);//calculated to turn left
+  runToPosition(10,-10);//calculated to turn left
 }
 void turnRight(){
-  runToPosition(-10,27);//calculated to turn right
+  runToPosition(-10,10);//calculated to turn right
 }
-void runToPosition(double r,double l){
-  int mult = 8*2;
-  if (not hasRun){
+int counter = 1;
+void runToPosition(double r, double l) {
+  int mult = 8 * 2;
+  if (not hasRun) {
+    finished = false;
     r *= -countsPerCM;
     l *= -countsPerCM;
-    r*=mult;
-    l*=mult;
-    if (r<1){
-      r*=-1;
+    r *= mult;
+    l *= mult;
+    if (r < 1) {
+      r *= -1;
       rRunF = false;
     }
-    if (l<1){
-      l*=-1;
+    if (l < 1) {
+      l *= -1;
       lRunF = false;
     }
     r = round(r);
     l = round(l);
   }
-  while ((rCPose < r or lCPose<l) and not finished){
+  while ((rCPose < r or lCPose < l) and not finished) {
+    if (counter == 1) {
+      if (lRunF) {  //if running forward
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW);
+      } else {  //running backward
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
+      }
+      if (rRunF) {  //running forward
+        digitalWrite(in3, HIGH);
+        digitalWrite(in4, LOW);
+      } else {  //backwards
+        digitalWrite(in3, LOW);
+        digitalWrite(in4, HIGH);
+      }
+    }
     rCPose = int(rCPose);
     lCPose = int(lCPose);
-    Serial.println(lCPose);
-
-    analogWrite(enA, speed);//set it to speed
+    analogWrite(enA, speed);  //set it to speed
     analogWrite(enB, speed);
-    if (lRunF){//if running forward
-      digitalWrite(in1, HIGH);
-      digitalWrite(in2, LOW);
-    }else{//running backward
-      digitalWrite(in1, LOW);
-      digitalWrite(in2, HIGH);
-    }
-    if (rRunF){//running forward
-      digitalWrite(in3, HIGH);
-      digitalWrite(in4, LOW);
-    }else{//backwards
-      digitalWrite(in3, LOW);
-      digitalWrite(in4, HIGH);
+    //both to position, stop and reset
+    if (lCPose >= l and rCPose >= r) {
+      finished = true;
+      resetEncoders();
+      break;
     }
     //is already counted
-    if (digitalRead(lEpin)==0 and !isHighL){
+    if (digitalRead(lEpin) == 0 and !isHighL) {
       isHighL = true;
-      lCPose+=1;
-    }
-    //was counted, be ready to count again
-    if (digitalRead(lEpin)==1){
+      lCPose += 1;
+    } else if (digitalRead(lEpin) == 1) {  //was counted, be ready to count again
       isHighL = false;
     }
     //check if its counted
-    if (digitalRead(rEpin)==0 and !isHighR){
+    if (digitalRead(rEpin) == 0 and !isHighR) {
       isHighR = true;
-      rCPose+=1;
-    }
-    // was counted as a one
-    if (digitalRead(rEpin)==1){
+      rCPose += 1;
+    } else if (digitalRead(rEpin) == 1) {  // was counted as a one
       isHighR = false;
     }
     //if it has gone to far, stop
-    if (lCPose >= l){
+    if (lCPose >= l) {
       digitalWrite(in1, LOW);
       digitalWrite(in2, LOW);
     }
-    //gone to far, stop
-    if (rCPose >= r){
+    if (rCPose >= r) {
       digitalWrite(in3, LOW);
       digitalWrite(in4, LOW);
     }
-    //both to position, stop and reset
-    if (lCPose>=l and rCPose>=r){
-      finished = true;
-      resetEncoders();
-      break;
-    }
     //stop for distance
-    if (getDistance()<=minimumDist and getDistance()<=minimumDist and getDistance()<=minimumDist){
-      stopMotors();
-      finished = true;
-      resetEncoders();
-      break;
-    }
+    //if (getDistance() <= minimumDist and getDistance() <= minimumDist and getDistance() <= minimumDist) {
+    //  stopMotors();
+    //  finished = true;
+    //  resetEncoders();
+    //  //resetLCD();
+    //  //message = "Stopped for distance < " + String(minimumDist);
+    //  //print(12);
+    //  break;
+    //}
+    counter += 1;
   }
 }
 void stopMotors(){
