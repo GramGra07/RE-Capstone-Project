@@ -336,7 +336,7 @@ void runToPosition(double r, double l) {
       finished = true;
       resetEncoders();
       resetLCD();
-      message = "Stopped for distance < " + String(minimumDist);
+      message = "Stopped for distance < " + String(minimumDist) + " cm";
       print(12);
       break;
     }
