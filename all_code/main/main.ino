@@ -88,6 +88,7 @@ void doSelections(boolean d, boolean t) {
       print(15);          //function to alter the string to make it multi-line
       firstTime = false;  //breaks out of running this if again
       ifAdded = false;
+      delay(500);
     }
     while (digitalRead(acceptBPin)) {  //while not accepted
       if (digitalRead(fBpin) and digitalRead(rBpin) and digitalRead(lBpin) and digitalRead(acceptBPin)) {  //checks that all buttons not pressed
@@ -136,6 +137,7 @@ void doSelections(boolean d, boolean t) {
       lcd.clear();
       print(16);
       firstTime = false;
+      delay(500);
     }
     while (digitalRead(acceptBPin)) {                   //not accepted
       if (digitalRead(rBpin) and digitalRead(lBpin)) {  //makes sure none was pressed
@@ -182,7 +184,10 @@ void indexIntoActions() {
   lcd.noCursor();
   message = "Running, watch out!";
   print(15);
-  delay(3500);
+  delay(2500);
+  resetLCD();
+  message = actions;
+  print(16);
   actions.replace(" ", "");
   for (int i = 0; i < actions.length(); i += 2) {
     d = int(actions[i + 1]) - 48;
@@ -192,11 +197,12 @@ void indexIntoActions() {
     }
     dir = String(actions[i]);
     if (dir == "R") {
-      runToPosition(-10,10);
+      turnRight();
     } else if (dir == "L") {
       turnLeft();
     }
     if (d != 0){
+      delay(500);
       runToPosition(d, d);
     }
     ph = i;
@@ -206,6 +212,15 @@ void indexIntoActions() {
     message = "Finished!";
     print(9);
   }
+}
+int trackWidth = 5;
+void turnLeft(){
+  trackWidth = 5;
+  runToPosition(trackWidth, -trackWidth);
+}
+void turnRight(){
+  trackWidth = 3;
+  runToPosition(-trackWidth, trackWidth);
 }
 //lcd
 void resetLCD() {
@@ -246,21 +261,14 @@ int getDistance() {  //will return distance in cm
   duration = pulseIn(echoPin, HIGH);
   distance = duration * 0.034 / 2;
   distance = int(distance);
-  //Serial.println(distance);
   return distance;
 }
 //motors/encoders
-void turnLeft() {
-  runToPosition(10, -10);  //calculated to turn left
-}
-void turnRight() {
-  runToPosition(-10, 10);  //calculated to turn right
-}
 int counter = 1;
 void runToPosition(double r, double l) {
   int mult = 8 * 2;
   if (not hasRun) {
-    finished = false;
+    resetEncoders();
     r *= -countsPerCM;
     l *= -countsPerCM;
     r *= mult;
@@ -277,7 +285,7 @@ void runToPosition(double r, double l) {
     l = round(l);
   }
   while ((rCPose < r or lCPose < l) and not finished) {
-    if (counter == 1) {
+    if (counter == 1) {// only set power once
       if (lRunF) {  //if running forward
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
@@ -338,10 +346,24 @@ void runToPosition(double r, double l) {
       resetLCD();
       message = "Stopped for distance < " + String(minimumDist) + " cm";
       print(12);
+      runAway();
       break;
     }
     counter += 1;
   }
+}
+void runAway(){
+  int rand = random(0,3);
+  if (rand == 1){
+    turnLeft();
+  }
+  if (rand == 2){
+    turnRight();
+  }
+  delay(1000);
+  resetLCD();
+  message = actions;
+  print(16);
 }
 void stopMotors() {
   digitalWrite(in1, LOW);
@@ -356,5 +378,6 @@ void resetEncoders() {
   rRunF = true;
   lCPose = 0;
   rCPose = 0;
-  delay(500);
+  counter = 1;
+  delay(2000);
 }
