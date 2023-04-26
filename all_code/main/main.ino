@@ -90,7 +90,7 @@ void doSelections(boolean d, boolean t) {
       ifAdded = false;
       delay(500);
     }
-    while (digitalRead(acceptBPin)) {  //while not accepted
+    while (digitalRead(acceptBPin)) {                                                                      //while not accepted
       if (digitalRead(fBpin) and digitalRead(rBpin) and digitalRead(lBpin) and digitalRead(acceptBPin)) {  //checks that all buttons not pressed
         isHigh = false;
       }
@@ -131,8 +131,8 @@ void doSelections(boolean d, boolean t) {
     }
   }
   while (t and !runOVR) {
-    dist = begindist;                                         //automaically selects beginDist as a distance
-    message = "Select distance (l=-,r=+):  " + String(dist) +"0";  //print out on the lcd
+    dist = begindist;                                               //automaically selects beginDist as a distance
+    message = "Select distance (l=-,r=+):  " + String(dist) + "0";  //print out on the lcd
     if (firstTime) {
       lcd.clear();
       print(16);
@@ -157,7 +157,7 @@ void doSelections(boolean d, boolean t) {
         if (dist > 1) {
           dist--;  //decrease
         }
-        if (dist == 1 and (actions[actions.length() - 2] == 'R' or actions[actions.length() - 2] == 'L')){
+        if (dist == 1 and (actions[actions.length() - 2] == 'R' or actions[actions.length() - 2] == 'L')) {
           dist--;
         }
         lcd.clear();
@@ -201,7 +201,7 @@ void indexIntoActions() {
     } else if (dir == "L") {
       turnLeft();
     }
-    if (d != 0){
+    if (d != 0) {
       delay(500);
       runToPosition(d, d);
     }
@@ -214,11 +214,11 @@ void indexIntoActions() {
   }
 }
 int trackWidth = 5;
-void turnLeft(){
+void turnLeft() {
   trackWidth = 5;
   runToPosition(trackWidth, -trackWidth);
 }
-void turnRight(){
+void turnRight() {
   trackWidth = 3;
   runToPosition(-trackWidth, trackWidth);
 }
@@ -285,8 +285,8 @@ void runToPosition(double r, double l) {
     l = round(l);
   }
   while ((rCPose < r or lCPose < l) and not finished) {
-    if (counter == 1) {// only set power once
-      if (lRunF) {  //if running forward
+    if (counter == 1) {  // only set power once
+      if (lRunF) {       //if running forward
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
       } else {  //running backward
@@ -352,12 +352,12 @@ void runToPosition(double r, double l) {
     counter += 1;
   }
 }
-void runAway(){
-  int rand = random(0,3);
-  if (rand == 1){
+void runAway() {
+  int rand = random(0, 3);
+  if (rand == 1) {
     turnLeft();
   }
-  if (rand == 2){
+  if (rand == 2) {
     turnRight();
   }
   delay(1000);
