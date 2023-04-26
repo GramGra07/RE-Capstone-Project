@@ -14,6 +14,14 @@ It will have four different colored buttons on the top as well as an LCD screen 
 We wanted to do this project based on the idea of programming a user input, and translating it into robot movements.
 We use a certain code, like F6R9L0F8, and translate that into how the robot will move. In that case, Forward 60, Right turn and then Forward 90, Left turn and Forward 0, then finally Forward 80. The main idea is to create our own code, and then read through it and perform those programmed actions.
 
+## Cost Overview
+
+Arduino Mega Elgoo $20
+
+Arduino OLD Spartan kit $50
+
+Total $50
+
 ## Useful Links
 https://create.arduino.cc/projecthub/ishaq-yang/auto-ultrasonic-car-a85c6f
 
