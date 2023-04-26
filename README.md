@@ -22,6 +22,8 @@ Arduino OLD Spartan kit $50
 
 Total $50
 
+Total Filament Used:
+
 ## Useful Links
 https://create.arduino.cc/projecthub/ishaq-yang/auto-ultrasonic-car-a85c6f
 
