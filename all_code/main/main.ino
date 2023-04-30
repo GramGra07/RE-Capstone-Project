@@ -215,12 +215,10 @@ void indexIntoActions() {
 }
 double trackWidth = 5;
 void turnLeft() {
-  trackWidth = 5;
   runToPosition(trackWidth, -trackWidth);
 }
 void turnRight() {
-  double trackWidth2 = (3 / 5) * trackWidth;
-  runToPosition(-trackWidth2, trackWidth2);
+  runToPosition(-trackWidth, trackWidth);
 }
 //lcd
 void resetLCD() {
