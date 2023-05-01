@@ -1,5 +1,5 @@
 # RE-Capstone-Project
-# The Three buttons robot
+# A Completely Autonomous, Programmable Car with Four Button Controls
 ## By Graden Gentry and Zale Diawara
 
 # Launch Description
