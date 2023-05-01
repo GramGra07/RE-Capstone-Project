@@ -17,13 +17,13 @@ int lEpin = 48;  //pin
 int lCPose = 0;  //pose
 int rEpin = 46;  //pin
 int rCPose = 0;  //pose
-boolean lEHigh = false;
+boolean lEHigh = false;//checks if encoder has been counted
 boolean rEHigh = false;
 boolean isHighR = false;
 boolean isHighL = false;
 boolean hasRun = false;
 boolean finished = false;
-bool lRunF = true;
+bool lRunF = true;//left motors running forward or not
 bool rRunF = true;
 int countsPerEncoder = 10;
 int wheelDiameter = 7;
@@ -35,6 +35,7 @@ int enA = 27, in1 = 26, in2 = 25;
 int enB = 23, in3 = 24, in4 = 22;
 //control
 boolean isStarted = false, runOVR = false;
+bool ifAdded = false;
 //distance
 int trigPin = 39, echoPin = 38, distance, minimumDist = 10;
 long duration;
@@ -66,8 +67,9 @@ void setup() {
   pinMode(rBpin, INPUT);
   pinMode(lBpin, INPUT);
   Serial.begin(9600);
+  //start
   lcd.begin(16, 2);
-  print(12);  //starting messageBind();
+  print(12); //print starting message to 12 characters
   lcd.noCursor();
   while (not isStarted) {            //waits for start
     if (!digitalRead(acceptBPin)) {  //start pressed
@@ -80,7 +82,6 @@ void setup() {
 }
 void loop() {
 }
-bool ifAdded = false;
 void doSelections(boolean d, boolean t) {
   while (d and !runOVR) {
     message = "Select direction:  ";  // ask for direction
@@ -96,27 +97,28 @@ void doSelections(boolean d, boolean t) {
         isHigh = false;
       }
       if (!digitalRead(fBpin) and !isHigh) {  // forward has been pressed
-        actions[actions.length() - 1] = 'F';
+        actions[actions.length() - 1] = 'F';//put F at the end
         message[message.length() - 1] = 'F';
         lcd.clear();
         print(15);
         ifAdded = true;
       }
       if (!digitalRead(rBpin) and !isHigh) {  //right has been pressed
-        actions[actions.length() - 1] = 'R';
+        actions[actions.length() - 1] = 'R'; //put R at the end
         message[message.length() - 1] = 'R';
         lcd.clear();
         print(15);
         ifAdded = true;
       }
       if (!digitalRead(lBpin) and !isHigh) {
-        actions[actions.length() - 1] = 'L';
+        actions[actions.length() - 1] = 'L'; //put L at the end
         message[message.length() - 1] = 'L';
         lcd.clear();
         print(15);
         ifAdded = true;
       }
-      if (!digitalRead(acceptBPin) and message[message.length() - 1] == ' ' and !isHigh and actions.length() > 1) {  //will start going into actions and run the robot
+      if (!digitalRead(acceptBPin) and message[message.length() - 1] == ' ' and !isHigh and actions.length() > 1) {
+        // above will check that first, accept is pressed, second, that the last character is a space, third, that isHigh is false, and fourth, that actions is greater than 1
         t = false;
         d = false;
         runOVR = true;
@@ -191,20 +193,20 @@ void indexIntoActions() {
   print(16);
   actions.replace(" ", "");
   for (int i = 0; i < actions.length(); i += 2) {
-    d = int(actions[i + 1]) - 48;
+    d = int(actions[i + 1]) - 48; //converts to int from ascii
     d *= 10;
-    if (d == -480) {
+    if (d == -480) { // this case should never happen but it is here in case
       d += 480;
     }
     dir = String(actions[i]);
-    if (dir == "R") {
+    if (dir == "R") { //if right
       turnRight();
-    } else if (dir == "L") {
+    } else if (dir == "L") { //if left
       turnLeft();
     }
-    if (d != 0) {
+    if (d != 0) { //if distance is not 0, aka it won't move
       delay(500);
-      runToPosition(d, d);
+      runToPosition(d, d); //run to position
     }
     ph = i;
   }
@@ -231,19 +233,19 @@ void resetLCD() {
   message = "";
 }
 void print(int start) {  //start will usually be 16 but changed to make not cut off words
-  if (message.length() >= 16) {
-    makeMessage(0, start);         //make a message only through start
+  if (message.length() >= 16) { //if message is longer than 16
+    makeMessage(0, start);         //make a message only through start variable
     lcd.print(m);                  //prints first line
     x = message.length() - start;  //changes line
     y = 1;                         //next line
-    lcd.setCursor(0, 1);
+    lcd.setCursor(0, 1);// set new cursor
     makeMessage(start, message.length());  //make a latter half message
     lcd.print(m);                          //print it out
-  } else {
+  } else { //if message is less than 16
     lcd.print(message);  //will print the message
   }
 }
-void makeMessage(int s, int e) {
+void makeMessage(int s, int e) { //will make a message from s to e
   m = "";
   for (int i = s; i < e; i++) {
     m += message[i];
@@ -350,7 +352,7 @@ void runToPosition(double r, double l) {
     counter += 1;
   }
 }
-void runAway() {
+void runAway() { //will clear itself from the wall if it is too close
   int rand = random(0, 3);
   if (rand == 1) {
     turnLeft();
@@ -363,13 +365,13 @@ void runAway() {
   message = actions;
   print(16);
 }
-void stopMotors() {
+void stopMotors() { //will stop motors
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
   digitalWrite(in3, LOW);
   digitalWrite(in4, LOW);
 }
-void resetEncoders() {
+void resetEncoders() { //will reset encoders and all associated variables
   finished = false;
   hasRun = false;
   lRunF = true;
