@@ -27,7 +27,8 @@ bool lRunF = true;
 bool rRunF = true;
 int countsPerEncoder = 10;
 int wheelDiameter = 7;
-double countsPerCM = 0.09;  //0.45 // converts cm to counts
+double countsPerCM = 0.09; // converts cm to counts
+double trackWidth = 5;
 //motors
 int speed = 1 * 255;
 int enA = 27, in1 = 26, in2 = 25;
@@ -213,7 +214,6 @@ void indexIntoActions() {
     print(9);
   }
 }
-double trackWidth = 5;
 void turnLeft() {
   runToPosition(trackWidth, -trackWidth);
 }
