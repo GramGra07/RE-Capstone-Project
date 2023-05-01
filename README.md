@@ -35,3 +35,5 @@ https://core-electronics.com.au/guides/use-lcd-arduino-uno/ and https://docs.ard
 Capstone instructions: https://docs.google.com/document/d/1Ap9XnDHmlUpDhtRLOVqSsqf3xh5cZPlc8qJfAl380MQ/edit
 
 Our Poster: https://docs.google.com/presentation/d/13sadksnsIwi6zoIYFUSCJ5H2SOaSJQ3OA5F7KWZk8_I/edit?usp=sharing
+
+Final Report: https://docs.google.com/document/d/1W_1EaG5vvnX9aRastAeAIGX7XnYR-Ac8esQ1Js8wa_4/edit?usp=sharing
