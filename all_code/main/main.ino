@@ -216,11 +216,13 @@ void indexIntoActions() {
     print(9);
   }
 }
-void turnLeft() {
-  runToPosition(trackWidth, -trackWidth);
+void turnLeft(){
+  trackWidth = 7;
+  runToPosition(trackWidth,-trackWidth);//calculated to turn left
 }
-void turnRight() {
-  runToPosition(-trackWidth, trackWidth);
+void turnRight(){
+  trackWidth = 8;
+  runToPosition(-trackWidth,trackWidth);//calculated to turn right
 }
 //lcd
 void resetLCD() {
@@ -266,7 +268,7 @@ int getDistance() {  //will return distance in cm
 //motors/encoders
 int counter = 1;
 void runToPosition(double r, double l) {
-  int mult = 8 * 2;
+  int mult = 4;
   if (not hasRun) {
     resetEncoders();
     r *= -countsPerCM;

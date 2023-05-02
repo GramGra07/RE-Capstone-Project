@@ -48,8 +48,7 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600);
-  turnRight();
-  //runToPosition(d,d);
+  runToPosition(20,20);
 }
 void loop() {
   //runToPosition(8,8);
@@ -66,17 +65,20 @@ int getDistance(){//will return distance
   //Serial.println(distance);
   return distance;
 }
+int trackWidth = 7;
 void turnLeft(){
-  runToPosition(10,-10);//calculated to turn left
+  trackWidth = 7;
+  runToPosition(trackWidth,-trackWidth);//calculated to turn left
 }
 void turnRight(){
-  runToPosition(-10,10);//calculated to turn right
+  trackWidth = 8;
+  runToPosition(-trackWidth,trackWidth);//calculated to turn right
 }
 int counter = 1;
 void runToPosition(double r, double l) {
-  int mult = 8 * 2;
+  int mult = 4;
   if (not hasRun) {
-    finished = false;
+    resetEncoders();
     r *= -countsPerCM;
     l *= -countsPerCM;
     r *= mult;
@@ -93,8 +95,8 @@ void runToPosition(double r, double l) {
     l = round(l);
   }
   while ((rCPose < r or lCPose < l) and not finished) {
-    if (counter == 1) {
-      if (lRunF) {  //if running forward
+    if (counter == 1) {  // only set power once
+      if (lRunF) {       //if running forward
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
       } else {  //running backward
@@ -115,6 +117,10 @@ void runToPosition(double r, double l) {
     analogWrite(enB, speed);
     //both to position, stop and reset
     if (lCPose >= l and rCPose >= r) {
+      //resetLCD();
+      //message = "Done!";
+      //print(12);
+      stopMotors();
       finished = true;
       resetEncoders();
       break;
@@ -143,15 +149,16 @@ void runToPosition(double r, double l) {
       digitalWrite(in4, LOW);
     }
     //stop for distance
-    //if (getDistance() <= minimumDist and getDistance() <= minimumDist and getDistance() <= minimumDist) {
-    //  stopMotors();
-    //  finished = true;
-    //  resetEncoders();
-    //  //resetLCD();
-    //  //message = "Stopped for distance < " + String(minimumDist);
-    //  //print(12);
-    //  break;
-    //}
+    if (getDistance() <= minimumDist and getDistance() <= minimumDist and getDistance() <= minimumDist) {
+      stopMotors();
+      finished = true;
+      resetEncoders();
+      //resetLCD();
+      //message = "Stopped for distance < " + String(minimumDist) + " cm";
+      //print(12);
+      //runAway();
+      break;
+    }
     counter += 1;
   }
 }
