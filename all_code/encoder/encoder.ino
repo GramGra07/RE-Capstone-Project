@@ -48,7 +48,8 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600);
-  runToPosition(20,20);
+  //runToPosition(30,30);
+  calibrate();
 }
 void loop() {
   //runToPosition(8,8);
@@ -74,9 +75,42 @@ void turnRight(){
   trackWidth = 8;
   runToPosition(-trackWidth,trackWidth);//calculated to turn right
 }
+void calibrate(){
+  analogWrite(enA, 150);  
+  analogWrite(enB, 150);
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  while  (not digitalRead(lEpin) == 0 or not digitalRead(rEpin) == 0){
+    Serial.println(digitalRead(rEpin));
+    if (digitalRead(lEpin) == 0){
+      digitalWrite(in1, LOW);
+      digitalWrite(in2, LOW);
+    }
+    if (digitalRead(rEpin) == 0){
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, LOW);
+    }
+    if (digitalRead(lEpin) == 0 and digitalRead(rEpin) == 0){
+      Serial.println("here");
+      break;
+    }
+    delay(1);
+  }
+}
+void manualCalibrate(){
+  while  (not digitalRead(lEpin) == 0 or not digitalRead(rEpin) == 0){
+    Serial.println("here");
+    if (digitalRead(lEpin) == 0 or digitalRead(rEpin) == 0){
+      Serial.println("done");
+      break;
+    }
+  }
+}
 int counter = 1;
 void runToPosition(double r, double l) {
-  int mult = 4;
+  double mult = 1;
   if (not hasRun) {
     resetEncoders();
     r *= -countsPerCM;
@@ -96,6 +130,8 @@ void runToPosition(double r, double l) {
   }
   while ((rCPose < r or lCPose < l) and not finished) {
     if (counter == 1) {  // only set power once
+      analogWrite(enA, speed);  //set it to speed
+      analogWrite(enB, speed);
       if (lRunF) {       //if running forward
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
@@ -113,8 +149,6 @@ void runToPosition(double r, double l) {
     }
     rCPose = int(rCPose);
     lCPose = int(lCPose);
-    analogWrite(enA, speed);  //set it to speed
-    analogWrite(enB, speed);
     //both to position, stop and reset
     if (lCPose >= l and rCPose >= r) {
       //resetLCD();
