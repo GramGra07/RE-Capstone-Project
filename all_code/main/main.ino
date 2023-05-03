@@ -3,7 +3,7 @@
 const int rs = 13, en = 12, d4 = 11, d5 = 10, d6 = 9, d7 = 8;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 //message altercations
-String message = "Plz tap red button";       //starting message
+String message;       
 int x = message.length() - 1, y = 0, t = 0;  //gives constant variables
 String m = "";
 String actions = " ";  //string for the entirety of actions
@@ -69,7 +69,15 @@ void setup() {
   Serial.begin(9600);
   //start
   lcd.begin(16, 2);
-  print(12); //print starting message to 12 characters
+  calibrate();
+  manualCalibrate();
+  if (not digitalRead(lEpin) == 0 and not digitalRead(rEpin) == 0){
+    manualCalibrate();
+  }
+  delay(1000);
+  resetLCD();
+  message = "Plz tap red button";
+  print(12);
   lcd.noCursor();
   while (not isStarted) {            //waits for start
     if (!digitalRead(acceptBPin)) {  //start pressed
@@ -81,6 +89,98 @@ void setup() {
   }
 }
 void loop() {
+}
+void calibrate(){
+  resetLCD();
+  message = "Please wait for calibration";
+  print(16);
+  delay(500);
+  analogWrite(enA, 150);  
+  analogWrite(enB, 150);
+  while  (not digitalRead(lEpin) == 0 or not digitalRead(rEpin) == 0){
+    if (digitalRead(lEpin) == 1){
+      digitalWrite(in1, HIGH);
+      digitalWrite(in2, LOW);
+    }
+    if (digitalRead(lEpin) == 0){
+      digitalWrite(in1, LOW);
+      digitalWrite(in2, LOW);
+    }
+    if (digitalRead(rEpin) == 1){
+      digitalWrite(in3, HIGH);
+      digitalWrite(in4, LOW);
+    }
+    if (digitalRead(rEpin) == 0){
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, LOW);
+    }
+    if (digitalRead(lEpin) == 0 and digitalRead(rEpin) == 0){
+      digitalWrite(in1, LOW);
+      digitalWrite(in2, LOW);
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, LOW);
+      resetLCD();
+      message="Calibration complete!";
+      print(12);
+      delay(500);
+      break;
+    }
+  }
+}
+void manualCalibrate(){
+  bool lCalibrated = false;
+  bool rCalibrated = false;
+  resetLCD();
+  message = "Manual calibration required";
+  print(16);
+  delay(2000);
+  resetLCD();
+  message = "Please turn the front two wheels";
+  print(16);
+  delay(2000);
+  resetLCD();
+  message = "Complete:   ";
+  print(16);
+  if (digitalRead(lEpin) == 0 and digitalRead(rEpin) == 0){
+    delay(500);
+    resetLCD();
+    message="Calibration complete!";
+    print(12);
+    delay(500);
+  }
+  while (digitalRead(lEpin) == 1 or digitalRead(rEpin) == 1){
+    if (digitalRead(lEpin) == 0 and not lCalibrated){
+      lcd.clear();
+      message[message.length() - 2] = 'L';
+      print(16);
+      lCalibrated = true;
+    }
+    if (digitalRead(lEpin) == 1 and lCalibrated){
+      lcd.clear();
+      message[message.length() - 2] = ' ';
+      print(16);
+      lCalibrated = false;
+    }
+    if (digitalRead(rEpin) == 0 and not rCalibrated){
+      lcd.clear();
+      message[message.length() - 1] = 'R';
+      print(16);
+      rCalibrated = true;
+    }
+    if (digitalRead(rEpin) == 1 and rCalibrated){
+      lcd.clear();
+      message[message.length() - 1] = ' ';
+      print(16);
+      rCalibrated = false;
+    }
+    if (digitalRead(lEpin) == 0 and digitalRead(rEpin) == 0){
+      resetLCD();
+      message="Calibration complete!";
+      print(12);
+      delay(500);
+      break;
+    }
+  }
 }
 void doSelections(boolean d, boolean t) {
   while (d and !runOVR) {
@@ -143,12 +243,16 @@ void doSelections(boolean d, boolean t) {
       delay(500);
     }
     while (digitalRead(acceptBPin)) {                   //not accepted
+      delay(100);
       if (digitalRead(rBpin) and digitalRead(lBpin)) {  //makes sure none was pressed
         isHigh = false;
       }
       if (!digitalRead(rBpin) and !isHigh) {  //pressed up/right
         if (dist < 9) {
           dist++;  //increase if less than nine
+          if (dist == 1){
+            dist++;
+          }
         }
         lcd.clear();
         String tl = String(dist);
@@ -159,6 +263,9 @@ void doSelections(boolean d, boolean t) {
       if (!digitalRead(lBpin) and !isHigh) {  //left/- pressed
         if (dist > 1) {
           dist--;  //decrease
+          if (dist == 1){
+            dist--;
+          }
         }
         if (dist == 1 and (actions[actions.length() - 2] == 'R' or actions[actions.length() - 2] == 'L')) {
           dist--;
@@ -206,7 +313,7 @@ void indexIntoActions() {
     }
     if (d != 0) { //if distance is not 0, aka it won't move
       delay(500);
-      runToPosition(d, d); //run to position
+      runToPosition(d, d,2); //run to position
     }
     ph = i;
   }
@@ -217,12 +324,12 @@ void indexIntoActions() {
   }
 }
 void turnLeft(){
-  trackWidth = 7;
-  runToPosition(trackWidth,-trackWidth);//calculated to turn left
+  trackWidth = 12;
+  runToPosition(trackWidth,-trackWidth,6);//calculated to turn left
 }
 void turnRight(){
-  trackWidth = 8;
-  runToPosition(-trackWidth,trackWidth);//calculated to turn right
+  trackWidth = 12;
+  runToPosition(-trackWidth,trackWidth,4);//calculated to turn right
 }
 //lcd
 void resetLCD() {
@@ -267,8 +374,7 @@ int getDistance() {  //will return distance in cm
 }
 //motors/encoders
 int counter = 1;
-void runToPosition(double r, double l) {
-  int mult = 4;
+void runToPosition(double r, double l, int mult) {//mult = 2 for forward, 8 for turning
   if (not hasRun) {
     resetEncoders();
     r *= -countsPerCM;
@@ -315,6 +421,7 @@ void runToPosition(double r, double l) {
       stopMotors();
       finished = true;
       resetEncoders();
+      calibrate();
       break;
     }
     //is already counted
@@ -362,7 +469,7 @@ void runAway() { //will clear itself from the wall if it is too close
   if (rand == 2) {
     turnRight();
   }
-  delay(1000);
+  delay(4000);
   resetLCD();
   message = actions;
   print(16);

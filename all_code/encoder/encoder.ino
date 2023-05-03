@@ -78,15 +78,18 @@ void turnRight(){
 void calibrate(){
   analogWrite(enA, 150);  
   analogWrite(enB, 150);
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
   while  (not digitalRead(lEpin) == 0 or not digitalRead(rEpin) == 0){
-    Serial.println(digitalRead(rEpin));
+    if (digitalRead(lEpin) == 1){
+      digitalWrite(in1, HIGH);
+      digitalWrite(in2, LOW);
+    }
     if (digitalRead(lEpin) == 0){
       digitalWrite(in1, LOW);
       digitalWrite(in2, LOW);
+    }
+    if (digitalRead(rEpin) == 1){
+      digitalWrite(in3, HIGH);
+      digitalWrite(in4, LOW);
     }
     if (digitalRead(rEpin) == 0){
       digitalWrite(in3, LOW);
@@ -94,9 +97,12 @@ void calibrate(){
     }
     if (digitalRead(lEpin) == 0 and digitalRead(rEpin) == 0){
       Serial.println("here");
+      digitalWrite(in1, LOW);
+      digitalWrite(in2, LOW);
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, LOW);
       break;
     }
-    delay(1);
   }
 }
 void manualCalibrate(){
