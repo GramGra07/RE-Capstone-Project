@@ -128,6 +128,7 @@ void calibrate(){
   }
 }
 void manualCalibrate(){
+  stopMotors();
   bool lCalibrated = false;
   bool rCalibrated = false;
   resetLCD();
@@ -261,14 +262,14 @@ void doSelections(boolean d, boolean t) {
         isHigh = true;
       }
       if (!digitalRead(lBpin) and !isHigh) {  //left/- pressed
-        if (dist > 1) {
-          dist--;  //decrease
-          if (dist == 1){
-            dist--;
-          }
+        if (dist > 2 and actions[actions.length() - 2] == 'F'){
+          dist --;
         }
-        if (dist == 1 and (actions[actions.length() - 2] == 'R' or actions[actions.length() - 2] == 'L')) {
+        if (dist > 0 and (actions[actions.length() - 2] == 'R' or actions[actions.length() - 2] == 'L')) {
           dist--;
+          if (dist == 1){
+            dist --;
+          }
         }
         lcd.clear();
         String tl = String(dist);
@@ -482,6 +483,9 @@ void stopMotors() { //will stop motors
 }
 void resetEncoders() { //will reset encoders and all associated variables
   calibrate();
+  resetLCD();
+  message = actions;
+  print(16);
   finished = false;
   hasRun = false;
   lRunF = true;
