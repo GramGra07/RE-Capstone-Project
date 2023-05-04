@@ -313,7 +313,7 @@ void indexIntoActions() {
     }
     if (d != 0) { //if distance is not 0, aka it won't move
       delay(500);
-      runToPosition(d, d,2); //run to position
+      runToPosition(d, d,4); //run to position
     }
     ph = i;
   }
@@ -481,6 +481,7 @@ void stopMotors() { //will stop motors
   digitalWrite(in4, LOW);
 }
 void resetEncoders() { //will reset encoders and all associated variables
+  calibrate();
   finished = false;
   hasRun = false;
   lRunF = true;

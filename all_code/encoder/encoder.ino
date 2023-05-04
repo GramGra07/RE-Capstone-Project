@@ -30,6 +30,7 @@ int echoPin = 38;
 long duration;
 int distance;
 double d = 90;
+int trackWidth;
 void setup() {
   pinMode(enA, OUTPUT);
 	pinMode(enB, OUTPUT);
@@ -48,11 +49,11 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   Serial.begin(9600);
-  //runToPosition(30,30);
   calibrate();
+  manualCalibrate();
+  runToPosition(30,30,4);
 }
 void loop() {
-  //runToPosition(8,8);
 }
 int getDistance(){//will return distance
   digitalWrite(trigPin, LOW);
@@ -66,16 +67,16 @@ int getDistance(){//will return distance
   //Serial.println(distance);
   return distance;
 }
-int trackWidth = 7;
 void turnLeft(){
-  trackWidth = 7;
-  runToPosition(trackWidth,-trackWidth);//calculated to turn left
+  trackWidth = 12;
+  runToPosition(trackWidth,-trackWidth,6);//calculated to turn left
 }
 void turnRight(){
-  trackWidth = 8;
-  runToPosition(-trackWidth,trackWidth);//calculated to turn right
+  trackWidth = 12;
+  runToPosition(-trackWidth,trackWidth,4);//calculated to turn right
 }
 void calibrate(){
+  delay(500);
   analogWrite(enA, 150);  
   analogWrite(enB, 150);
   while  (not digitalRead(lEpin) == 0 or not digitalRead(rEpin) == 0){
@@ -96,11 +97,11 @@ void calibrate(){
       digitalWrite(in4, LOW);
     }
     if (digitalRead(lEpin) == 0 and digitalRead(rEpin) == 0){
-      Serial.println("here");
       digitalWrite(in1, LOW);
       digitalWrite(in2, LOW);
       digitalWrite(in3, LOW);
       digitalWrite(in4, LOW);
+      delay(500);
       break;
     }
   }
@@ -115,8 +116,7 @@ void manualCalibrate(){
   }
 }
 int counter = 1;
-void runToPosition(double r, double l) {
-  double mult = 1;
+void runToPosition(double r, double l, int mult) {//mult = 2 for forward, 8 for turning
   if (not hasRun) {
     resetEncoders();
     r *= -countsPerCM;
@@ -136,8 +136,6 @@ void runToPosition(double r, double l) {
   }
   while ((rCPose < r or lCPose < l) and not finished) {
     if (counter == 1) {  // only set power once
-      analogWrite(enA, speed);  //set it to speed
-      analogWrite(enB, speed);
       if (lRunF) {       //if running forward
         digitalWrite(in1, HIGH);
         digitalWrite(in2, LOW);
@@ -155,14 +153,14 @@ void runToPosition(double r, double l) {
     }
     rCPose = int(rCPose);
     lCPose = int(lCPose);
+    analogWrite(enA, speed);  //set it to speed
+    analogWrite(enB, speed);
     //both to position, stop and reset
     if (lCPose >= l and rCPose >= r) {
-      //resetLCD();
-      //message = "Done!";
-      //print(12);
       stopMotors();
       finished = true;
       resetEncoders();
+      calibrate();
       break;
     }
     //is already counted
@@ -193,10 +191,7 @@ void runToPosition(double r, double l) {
       stopMotors();
       finished = true;
       resetEncoders();
-      //resetLCD();
-      //message = "Stopped for distance < " + String(minimumDist) + " cm";
-      //print(12);
-      //runAway();
+      Serial.println("Stop distance");
       break;
     }
     counter += 1;
@@ -208,12 +203,14 @@ void stopMotors(){
 	digitalWrite(in3, LOW);
 	digitalWrite(in4, LOW);
 }
-void resetEncoders(){
+void resetEncoders() { //will reset encoders and all associated variables
+  calibrate();
   finished = false;
   hasRun = false;
   lRunF = true;
   rRunF = true;
   lCPose = 0;
   rCPose = 0;
-  delay(500);
+  counter = 1;
+  delay(2000);
 }
