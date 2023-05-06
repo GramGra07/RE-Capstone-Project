@@ -290,10 +290,9 @@ void doSelections(boolean d, boolean t) {
   }
 }
 void indexIntoActions() {
-  int ph;
-  Serial.println("Running with " + actions);
+  Serial.println("Running with " + actions);//tell computer it is running
   lcd.noCursor();
-  message = "Running, watch out!";
+  message = "Running, watch out!";//warn user
   print(15);
   delay(2500);
   resetLCD();
@@ -306,7 +305,7 @@ void indexIntoActions() {
     if (d == -480) { // this case should never happen but it is here in case
       d += 480;
     }
-    dir = String(actions[i]);
+    dir = String(actions[i]);// finds direction
     if (dir == "R") { //if right
       turnRight();
     } else if (dir == "L") { //if left
@@ -316,12 +315,6 @@ void indexIntoActions() {
       delay(500);
       runToPosition(d, d,4); //run to position
     }
-    ph = i;
-  }
-  if (ph >= actions.length()) {
-    resetLCD();
-    message = "Finished!";
-    print(9);
   }
 }
 void turnLeft(){
@@ -329,8 +322,8 @@ void turnLeft(){
   runToPosition(trackWidth,-trackWidth,6);//calculated to turn left
 }
 void turnRight(){
-  trackWidth = 12;
-  runToPosition(-trackWidth,trackWidth,4);//calculated to turn right
+  trackWidth = 17;
+  runToPosition(-trackWidth,trackWidth,3);//calculated to turn right
 }
 //lcd
 void resetLCD() {
@@ -456,6 +449,7 @@ void runToPosition(double r, double l, int mult) {//mult = 2 for forward, 8 for 
       resetLCD();
       message = "Stopped for distance < " + String(minimumDist) + " cm";// print out message
       print(12);
+      delay(1000);
       runAway();
       break;
     }
@@ -470,7 +464,7 @@ void runAway() { //will clear itself from the wall if it is too close
   if (rand == 2) {
     turnRight();
   }
-  delay(4000);
+  delay(2000);
   resetLCD();
   message = actions;
   print(16);
