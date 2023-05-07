@@ -11,6 +11,8 @@
 
 We have made a robotic car that will allow a user to set direction and distance instructions for the robot to follow. For instance, the user will start the car and the LCD display will ask for a direction which will be input using one of the three buttons ( black, white, blue). It will then put the current selection on the LCD display. If the user is satisfied with their selection, they will tap the red button to accept the response and it will move on to selecting a distance. A base distance will be already selected and the user will use the white and blue buttons to change the distance. It will only allow the user to select 0 cm if the user has previously selected a direction of right or left. If the user selects forward, the minimum distance is 20 cm and the maximum is 90 cm. Once the user is again satisfied with the selection they will tap the red button again and it will save the selection. At this point in the program, it will allow the user to do the process again, or run the robot by pressing the red button again. Once running, the car will make sure it doesn’t crash by using a distance sensor to stop it an average of 6 cm away from an object.
 
+
+
 ## System Details
 
 The robot is using some basic parts like Arduino motors and more complex parts like the Arduino Mega Elegoo. \ The first element of the robot where everything starts is the Arduino Elegoo because that is where the code is stored and also it is the part that sends those codes to the motors, the buttons and the LCD screen. The Arduino Elegoo Mega is the communicator between the buttons and the motors to transmit the instructions from the buttons to the motors, between the buttons and the LCD screen to display the instructions given from the buttons and finally between the motors (especially the encoders) and the ultrasonic sensor to tell the motors to stop when the robot is too close to hit something (around 6 cm). 
@@ -63,18 +65,23 @@ Figure 1 (Circuit Diagram)
 Figure 2 (Flowchart of the system)
 
 ![](pictures/powerSources.png)
+
 Figure 3 (Power Sources)
 
 ![](CAD/topOfRobot.png)
+
 Figure 4 (Top of Robot)
 
 ![](CAD/9VBatteryHolder.png)
+
 Figure 5 (9V Battery Holder)
 
 ![](graphs/setVSActualStoppedGraph.png)
+
 Figure 6 (Stopped vs. Minimum Distance Graph)
 
 ![](graphs/setVSActualDistanceGraph.png)
+
 Figure 7 (Actual vs. Set Distance Testing Graph)
 
 
