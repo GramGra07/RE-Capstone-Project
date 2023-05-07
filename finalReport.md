@@ -4,7 +4,7 @@
 ## Zale Diawara and Graden Gentry
 ## 5/6/23
 
-
+![](pictures/picture6.jpeg)
 
 
  ## Design Summary
