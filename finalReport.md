@@ -11,7 +11,9 @@
 
 We have made a robotic car that will allow a user to set direction and distance instructions for the robot to follow. For instance, the user will start the car and the LCD display will ask for a direction which will be input using one of the three buttons ( black, white, blue). It will then put the current selection on the LCD display. If the user is satisfied with their selection, they will tap the red button to accept the response and it will move on to selecting a distance. A base distance will be already selected and the user will use the white and blue buttons to change the distance. It will only allow the user to select 0 cm if the user has previously selected a direction of right or left. If the user selects forward, the minimum distance is 20 cm and the maximum is 90 cm. Once the user is again satisfied with the selection they will tap the red button again and it will save the selection. At this point in the program, it will allow the user to do the process again, or run the robot by pressing the red button again. Once running, the car will make sure it doesn’t crash by using a distance sensor to stop it an average of 6 cm away from an object.
 
+![](diagrams/labeledDiagram1.png)
 
+![](diagrams/labeledDiagram2.png)
 
 ## System Details
 
