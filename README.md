@@ -36,4 +36,4 @@ Capstone instructions: https://docs.google.com/document/d/1Ap9XnDHmlUpDhtRLOVqSs
 
 Our Poster: https://docs.google.com/presentation/d/13sadksnsIwi6zoIYFUSCJ5H2SOaSJQ3OA5F7KWZk8_I/edit?usp=sharing
 
-Final Report: https://docs.google.com/document/d/1W_1EaG5vvnX9aRastAeAIGX7XnYR-Ac8esQ1Js8wa_4/edit?usp=sharing
+Testing Log: https://docs.google.com/spreadsheets/d/1tO00ziJ-Gukyq96_y4_CSVAVIG8Ud_WrxS_RcOtxezU/edit#gid=0
