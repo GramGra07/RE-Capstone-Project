@@ -56,6 +56,26 @@ LCD Screen - $4
 
 Some of the main issues we faced were in the wiring, the programming of the robot, and the true and false encoders. The robot is very compact and tight, which made it a challenge to organize and plug in wires, especially the buttons as they all had to go in at the same time. Although we got off to a quick start with the programming, it was a challenge to learn more about how Arduino char type variables work and how to take a specific value out of that correctly. We fixed this by taking the original value and subtracting the ASCII value of 0, our starting number. We also learned more about how adding characters to the end of a string works. This was a little bit of a challenge because we weren’t able to just add the character to the end of the string and we ended up having to replace the very end character in order to make it work better. You can see this in Code Block 1 in the appendix, where we take the message’s length, and then replace the end character ( a space ), with the selected character. We would recommend that other students try to keep all variables in the same format so you don't run into any errors trying to convert between types, specifically ASCII characters and strings, which are easy to fix, but confusing to understand and debug. We would also recommend intensive use of the serial monitor for Arduino, and print statements for python, it makes it super easy to find breakpoints and easily debug the code. True and false encoders have also been a problem through this project. If one starts as “on”, and the other encoder starts as “off”, then when it counts, it will have to go further for the one that started as “off”. We made a calibration sequence to combat this problem, and by running the motors until both encoders reach an “off” state, we can get more accurate movements as seen in Code Block 4 in the appendix.
 
+## How to Build It
+
+You will need a Spartan Kit, four buttons, an Arduino Mega, a tiny breadboard, a lot of wires, an LCD screen, the Top of Robot 3D print, 12V battery pack, 9V battery and holder 3D print, a Ultrasonic Distance sensor, and a L298N motor controller.
+
+1. Take the top part off the spartan robot which will be later replaced with the 3D print
+
+2. Assemble the LCD screen to the Arduino based on the wiring diagram
+
+3. Assemble the power and ground board for the robot. This is done by having one side of the breadboard for power, and the other for ground. Then all wires will be connected to this breadboard for power and ground. The wiring is shown in the wiring diagram.
+
+4. You will then connect the motor driver to the Arduino Mega and motors as shown in the wiring diagram.
+
+5. You will then connect the distance sensor as shown in the wiring diagram.
+
+6. Put on the top of the robot while connecting the buttons through the holes in the 3D print as well as screwing in the LCD screen
+
+7. Then, connect the switches to both power connections from the batteries, and mount them in the 3D print. (The switches are from the Spartan kit)
+
+8. Screw in the top of robot print to the metal frame
+
 ## Appendix
 
 ![](diagrams/finalWiringDiagram.png)
