@@ -17,7 +17,7 @@ We use a certain code, like F6R9L0F8, and translate that into how the robot will
 
 ## Cost Overview
 
-Arduino Mega Elgoo $20
+Arduino Mega Elegoo $20
 
 Arduino OLD Spartan kit $50
 

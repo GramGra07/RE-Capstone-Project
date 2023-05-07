@@ -27,15 +27,25 @@ While building this robot, we have incorporated a LCD screen as an output displa
 ## Complete Parts List
 
 Elegoo Arduino Mega - Arduino microcontroller - $20
+
 L298N Motor Controller - Used to control all the motors and direction - $2
+
 Arduino Spartan Kit - Contains a base, four motors, two encoders - $50
+
 Ultrasonic Distance Sensor HC-SR04 - $2
+
 4x Micro Switch Push Button - $4
+
 AdaFruit Tiny Breadboard - $4
+
 LCD Screen - $4
+
 4x 10K ohm resistor - $0.06
+
 8 AA Battery Holder - $4
+
 8x AA Battery - $8
+
 9V Battery - $1.5
 
 ## Lessons Learned
@@ -44,20 +54,27 @@ Some of the main issues we faced were in the wiring, the programming of the robo
 
 ## Appendix
 
+![](diagrams/finalWiringDiagram.png)
+
 Figure 1 (Circuit Diagram)
+
+![](diagrams/flowchart.png)
 
 Figure 2 (Flowchart of the system)
 
-
+![](pictures/powerSources.png)
 Figure 3 (Power Sources)
 
+![](CAD/topOfRobot.png)
 Figure 4 (Top of Robot)
 
+![](CAD/9VBatteryHolder.png)
 Figure 5 (9V Battery Holder)
 
-
+![](graphs/setVSActualStoppedGraph.png)
 Figure 6 (Stopped vs. Minimum Distance Graph)
 
+![](graphs/setVSActualDistanceGraph.png)
 Figure 7 (Actual vs. Set Distance Testing Graph)
 
 
