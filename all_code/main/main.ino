@@ -74,7 +74,6 @@ void setup() {
   if (not digitalRead(lEpin) == 0 and not digitalRead(rEpin) == 0){
     manualCalibrate();
   }
-  turnRight();
   delay(1000);
   resetLCD();
   message = "Plz tap red button";
@@ -323,8 +322,8 @@ void turnLeft(){
   runToPosition(trackWidth,-trackWidth,6);//calculated to turn left
 }
 void turnRight(){
-  trackWidth = 22;
-  runToPosition(-trackWidth,trackWidth,2);//calculated to turn right
+  trackWidth = 12;
+  runToPosition(-trackWidth,trackWidth,6);//calculated to turn right
 }
 //lcd
 void resetLCD() {
