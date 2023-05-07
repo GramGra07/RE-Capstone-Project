@@ -322,7 +322,7 @@ void turnLeft(){
   runToPosition(trackWidth,-trackWidth,6);//calculated to turn left
 }
 void turnRight(){
-  trackWidth = 20;
+  trackWidth = 15;
   runToPosition(-trackWidth,trackWidth,2);//calculated to turn right
 }
 //lcd
