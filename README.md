@@ -28,27 +28,40 @@ While building this robot, we have incorporated a LCD screen as an output displa
 
 ## Complete Parts List
 
-Elegoo Arduino Mega - Arduino microcontroller - $20
+[Elegoo Arduino Mega][mega]
+Part Num: LYSB01H4ZDYCE-ELECTRNCS - Arduino microcontroller - $20
 
-L298N Motor Controller - Used to control all the motors and direction - $2
+[L298N Motor Controller][mcontroller]
+Part Num: CECOMINOD012186m - Used to control all the motors and direction - $2
 
-Arduino Spartan Kit - Contains a base, four motors, two encoders - $50
+Arduino Spartan Kit  - Contains a base, four motors, two encoders - $50
 
-Ultrasonic Distance Sensor HC-SR04 - $2
+[Ultrasonic Distance Sensor HC-SR04][dist]
+Part Num: Dana-YJ171306 - $2
 
-4x Micro Switch Push Button - $4
+[4x Micro Switch Push Button][button]
+Part Num: CYT1009 - $4
 
-AdaFruit Tiny Breadboard - $4
+[AdaFruit Tiny Breadboard][bread]
+Part Num: B071KCZZ4K - $4
 
-LCD Screen - $4
+[LCD Screen][lcd]
+Part Num: HD44780 - $4
 
-4x 10K ohm resistor - $0.06
+[4x 220 ohm resistor][resist]
+Part Num: EFR-W0D50-A:MF - $0.06
 
-8 AA Battery Holder - $4
+[10k ohm potentiometer][potent]
+Part Num: Breadboard trim kit - $4
 
-8x AA Battery - $8
+[8 AA Battery Holder][connector]
+Part Num: B07WP1CYYW - $4
 
-9V Battery - $1.5
+[8x AA Battery][aaBat]
+Part Num: DURACELL - 04343 - 12/PACK - $16
+
+[9V Battery][batLink]
+Part Num: MN1604B1Z - $7
 
 ## Lessons Learned
 
@@ -469,7 +482,7 @@ void indexIntoActions() {
 ```
 
 
-[batLink]: amazon.com/Duracell-Coppertop-Alkaline-Batteries-Count/dp/B00009V2QT/ref=sxin_16_sbv_search_btf?content-id=amzn1.sym.b000e0a0-9e93-480f-bf78-a83c8136dfcb%3Aamzn1.sym.b000e0a0-9e93-480f-bf78-a83c8136dfcb&crid=2TI615UKLIO2B&cv_ct_cx=9v%2Bbattery&keywords=9v%2Bbattery&pd_rd_i=B000K2NW08&pd_rd_r=d9957b87-a36b-47bc-8a02-cc75e09949cc&pd_rd_w=w1nZ5&pd_rd_wg=wGvo8&pf_rd_p=b000e0a0-9e93-480f-bf78-a83c8136dfcb&pf_rd_r=ZJ22F3Q67XEKWEMNK3D0&qid=1683558022&s=hpc&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sprefix=9v%2Bbattery%2Chpc%2C107&sr=1-1-5190daf0-67e3-427c-bea6-c72c1df98776&th=1
+[batLink]: https://www.amazon.com/Duracell-Coppertop-Alkaline-Batteries-Count/dp/B00009V2QT/ref=sxin_16_sbv_search_btf?content-id=amzn1.sym.b000e0a0-9e93-480f-bf78-a83c8136dfcb%3Aamzn1.sym.b000e0a0-9e93-480f-bf78-a83c8136dfcb&crid=2TI615UKLIO2B&cv_ct_cx=9v%2Bbattery&keywords=9v%2Bbattery&pd_rd_i=B000K2NW08&pd_rd_r=d9957b87-a36b-47bc-8a02-cc75e09949cc&pd_rd_w=w1nZ5&pd_rd_wg=wGvo8&pf_rd_p=b000e0a0-9e93-480f-bf78-a83c8136dfcb&pf_rd_r=ZJ22F3Q67XEKWEMNK3D0&qid=1683558022&s=hpc&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sprefix=9v%2Bbattery%2Chpc%2C107&sr=1-1-5190daf0-67e3-427c-bea6-c72c1df98776&th=1
 
 [aaBat]: https://www.amazon.com/dp/B006D0U9IO/ref=redir_mobile_desktop?_encoding=UTF8&aaxitk=23e45fdfdff3c7dcdc8b0b777c90ca48&content-id=amzn1.sym.7dd77237-72be-4809-b5b5-d553eab7ad9d%3Aamzn1.sym.7dd77237-72be-4809-b5b5-d553eab7ad9d&hsa_cr_id=2582303500601&pd_rd_plhdr=t&pd_rd_r=7a89b7fc-677a-40e2-9eb1-19817062d0c9&pd_rd_w=8wxSL&pd_rd_wg=VE0Wk&qid=1683557950&ref_=sbx_be_s_sparkle_lsi4d_asin_0_title&sr=1-1-9e67e56a-6f64-441f-a281-df67fc737124&th=1
 
