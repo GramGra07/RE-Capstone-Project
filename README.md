@@ -71,23 +71,26 @@ Some of the main issues we faced were in the wiring, the programming of the robo
 
 You will need a Spartan Kit, four buttons, an Arduino Mega, 4 220 ohm resistors, 1 10k ohm potentiometer, a tiny breadboard, a lot of wires, an LCD screen, the Top of Robot 3D print, 12V battery pack, 9V battery and holder 3D print, a Ultrasonic Distance sensor, and a L298N motor controller.
 
-1. Take the top part off the spartan robot which will be later replaced with the 3D print
+1. Take the top part off the spartan robot which will be later replaced with the 3D print.
 
-2. Assemble the LCD screen to the Arduino based on the wiring diagram and as seen at this [link][instruct]
+![](pictures/baseRobot.png)
 
-3. Assemble the power and ground board for the robot. This is done by having one side of the tiny breadboard for power, and the other for ground. Then all wires will be connected to this breadboard for power and ground. The wiring is shown in the wiring diagram
+2. Assemble the LCD screen to the Arduino based on the wiring diagram and as seen at this link.
 
-4. Solder the switches onto the power source wires. These switches act as a break in the wire so when it is on, it will allow flow through the wire. Cut the power wire in half and connect one of the halves to the middle pin and the other half to one of the outside pins on the switch. When it is off, the switch will be on the same side as the wire on the outside pin
+3. Assemble the power and ground board for the robot. This is done by having one side of the tiny breadboard for power, and the other for ground. Then all wires will be connected to this breadboard for power and ground. This is used for power distribution through the entire system. The wiring is shown in the wiring diagram.
 
-5. You will then connect the motor driver to the Arduino Mega and motors as shown in the wiring diagram, 2 motors will be connected to each side of the motor driver
+4. Solder the switches into the power source wires. These switches act as a break in the wire so when it is on, it will allow flow through the wire. Cut the power wire in half and connect one of the halves to the middle pin and the other half to one of the outside pins on the switch. When it is off, the switch will be on the same side as the wire on the outside pin. The red wire from the power connector will be connected to the 12V pin on the motor controller, and the black ground wire from the power connector and the gnd from the Arduino will both be connected to the gnd pin on the motor controller.
 
-6. You will then need to solder wires to the ends of the buttons as shown in the wiring diagram
+5. You will then connect the motor driver to the Arduino Mega and motors as shown in the wiring diagram, 2 motors will be connected to each side of the motor driver.
 
-7. You will then connect the distance sensor as shown in the wiring diagram. And insert it into the distance sensor holder, found in our repository under CAD
+6. You will then need to solder wires to the ends of the buttons as shown in the wiring diagram. One pin will be connected to power, the others to the ground and pin on the Arduino. The bottom right pin goes to ground, the top right pin to power through a resistor, and the top left pin to the Arduino for input.
 
-8. Put on the top of the robot while connecting the buttons through the holes in the 3D print, and mounting the switches, as well as screwing in the LCD screen
+7. You will then connect the distance sensor as shown in the wiring diagram. And insert it into the distance sensor holder, found in our repository under CAD.
 
-9. Screw in the top of robot print to the metal frame
+8. Put on the top of the robot while connecting the buttons through the holes in the 3D print, and mounting the switches, as well as screwing in the LCD screen.
+
+9. Screw in the top of the robot print to the metal frame.
+
 
 ## Appendix
 
