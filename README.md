@@ -69,23 +69,25 @@ Some of the main issues we faced were in the wiring, the programming of the robo
 
 ## How to Build It
 
-You will need a Spartan Kit, four buttons, an Arduino Mega, a tiny breadboard, a lot of wires, an LCD screen, the Top of Robot 3D print, 12V battery pack, 9V battery and holder 3D print, a Ultrasonic Distance sensor, and a L298N motor controller.
+You will need a Spartan Kit, four buttons, an Arduino Mega, 4 220 ohm resistors, 1 10k ohm potentiometer, a tiny breadboard, a lot of wires, an LCD screen, the Top of Robot 3D print, 12V battery pack, 9V battery and holder 3D print, a Ultrasonic Distance sensor, and a L298N motor controller.
 
 1. Take the top part off the spartan robot which will be later replaced with the 3D print
 
-2. Assemble the LCD screen to the Arduino based on the wiring diagram
+2. Assemble the LCD screen to the Arduino based on the wiring diagram and as seen at this [link][instruct]
 
-3. Assemble the power and ground board for the robot. This is done by having one side of the breadboard for power, and the other for ground. Then all wires will be connected to this breadboard for power and ground. The wiring is shown in the wiring diagram.
+3. Assemble the power and ground board for the robot. This is done by having one side of the tiny breadboard for power, and the other for ground. Then all wires will be connected to this breadboard for power and ground. The wiring is shown in the wiring diagram
 
-4. You will then connect the motor driver to the Arduino Mega and motors as shown in the wiring diagram.
+4. Solder the switches onto the power source wires. These switches act as a break in the wire so when it is on, it will allow flow through the wire. Cut the power wire in half and connect one of the halves to the middle pin and the other half to one of the outside pins on the switch. When it is off, the switch will be on the same side as the wire on the outside pin
 
-5. You will then connect the distance sensor as shown in the wiring diagram.
+5. You will then connect the motor driver to the Arduino Mega and motors as shown in the wiring diagram, 2 motors will be connected to each side of the motor driver
 
-6. Put on the top of the robot while connecting the buttons through the holes in the 3D print as well as screwing in the LCD screen
+6. You will then need to solder wires to the ends of the buttons as shown in the wiring diagram
 
-7. Then, connect the switches to both power connections from the batteries, and mount them in the 3D print. (The switches are from the Spartan kit)
+7. You will then connect the distance sensor as shown in the wiring diagram. And insert it into the distance sensor holder, found in our repository under CAD
 
-8. Screw in the top of robot print to the metal frame
+8. Put on the top of the robot while connecting the buttons through the holes in the 3D print, and mounting the switches, as well as screwing in the LCD screen
+
+9. Screw in the top of robot print to the metal frame
 
 ## Appendix
 
@@ -503,3 +505,5 @@ void indexIntoActions() {
 [mega]: https://www.amazon.com/ELEGOO-ATmega2560-ATMEGA16U2-Arduino-Compliant/dp/B01H4ZDYCE/ref=asc_df_B01H4ZDYCE/?tag=&linkCode=df0&hvadid=309751315916&hvpos=&hvnetw=g&hvrand=7714658428152309449&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9028912&hvtargid=pla-493625544636&ref=&adgrpid=67183599252&th=1
 
 [potent]: https://www.amazon.com/MCIGICM-Breadboard-Trim-Potentiometer-Arduino/dp/B07S69443J/ref=asc_df_B07S69443J/?tag=hyprod-20&linkCode=df0&hvadid=343482750668&hvpos=&hvnetw=g&hvrand=15135117993384003649&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9028912&hvtargid=pla-778270276725&psc=1&tag=&ref=&adgrpid=68626770865&hvpone=&hvptwo=&hvadid=343482750668&hvpos=&hvnetw=g&hvrand=15135117993384003649&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9028912&hvtargid=pla-778270276725
+
+[instruct]: https://docs.arduino.cc/learn/electronics/lcd-displays
