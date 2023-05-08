@@ -74,6 +74,7 @@ You will need a Spartan Kit, four buttons, an Arduino Mega, 4 220 ohm resistors,
 1. Take the top part off the spartan robot which will be later replaced with the 3D print.
 
 ![](pictures/baseRobot.png) 
+<img src=/pictures/baseRobot.png rotate=90>
 
 2. Assemble the LCD screen to the Arduino based on the wiring diagram and as seen at this link.
 
